@@ -1,73 +1,63 @@
-import Image from "next/image";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArticleCard } from "@/components/article-card";
-import { posts } from "@/lib/posts";
+import { CategoryRail } from "@/components/category-rail";
+import { categories, categoryOrder } from "@/lib/categories";
+import { getAllPosts, getPostsByCategory } from "@/lib/posts";
+import { siteConfig } from "@/lib/site";
 
-export default function Home() {
-  const [featured, ...latest] = posts;
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
+export default function HomePage() {
+  const posts = getAllPosts();
+  const [featured, ...rest] = posts;
+  const secondary = rest.slice(0, 2);
 
   return (
     <>
-      <section className="home-hero">
-        <div className="shell hero-grid">
-          <div className="hero-copy">
-            <p className="kicker">오늘의 생활을 가볍게</p>
-            <h1>알아두면 덜 헤매는<br />작고 확실한 방법들</h1>
-            <p className="hero-lead">
-              생활비를 정리하고, 디지털 피로를 줄이고, 여행 준비를 단순하게.
-              알고가요는 오늘 바로 해볼 수 있는 순서로 정보를 전합니다.
-            </p>
-            <div className="hero-actions">
-              <Link className="button button-primary" href="/articles">최신 글 보기</Link>
-              <Link className="button button-quiet" href="/about">어떻게 만드는지</Link>
-            </div>
+      <section className="home-intro shell" aria-labelledby="home-title">
+        <h1 id="home-title">{siteConfig.tagline}</h1>
+        <p>
+          생활비, 디지털 습관, 여행 준비처럼 매일 마주치는 일을 미리 알고 가면 덜 헤맵니다. {siteConfig.name}는 오늘 바로
+          따라 할 수 있는 순서와 확인할 기준만 골라 정리합니다.
+        </p>
+      </section>
+
+      {featured && (
+        <section className="home-lead shell" aria-label="최신 글">
+          <div className="home-lead__main">
+            <ArticleCard post={featured} variant="featured" priority />
           </div>
-          <Link className="featured-story" href={`/articles/${featured.slug}`}>
-            <div className="featured-image">
-              <Image src={featured.image} alt={featured.imageAlt} fill sizes="(max-width: 860px) 100vw, 50vw" priority />
+          {secondary.length > 0 && (
+            <div className="home-lead__side">
+              {secondary.map((post) => (
+                <ArticleCard key={post.slug} post={post} variant="compact" />
+              ))}
+              <Link className="text-link home-lead__more" href="/articles">
+                전체 글 {posts.length}편 보기 <span aria-hidden="true">→</span>
+              </Link>
             </div>
-            <div className="featured-overlay">
-              <span>{featured.categoryLabel} · {featured.readingTime}</span>
-              <strong>{featured.title}</strong>
-            </div>
+          )}
+        </section>
+      )}
+
+      {categoryOrder.map((slug) => (
+        <CategoryRail key={slug} category={categories[slug]} posts={getPostsByCategory(slug).slice(0, 3)} />
+      ))}
+
+      <section className="home-about shell" aria-labelledby="home-about-title">
+        <div className="home-about__inner">
+          <p className="kicker">알고가요는</p>
+          <h2 id="home-about-title">결론을 먼저, 순서는 따라 할 수 있게, 조건은 숨기지 않게</h2>
+          <p>
+            막연한 조언 대신 무엇부터 확인하고 어떤 기준으로 결정할지 적습니다. 제도나 서비스 조건처럼 사람마다 결과가
+            달라지는 내용은 예외와 확인할 점을 함께 밝힙니다.
+          </p>
+          <Link className="button button--primary" href="/about">
+            운영자와 편집 원칙 보기
           </Link>
-        </div>
-      </section>
-
-      <section className="section shell" aria-labelledby="latest-heading">
-        <div className="section-heading">
-          <div>
-            <p className="kicker">새로 정리했어요</p>
-            <h2 id="latest-heading">최신 가이드</h2>
-          </div>
-          <Link className="text-link" href="/articles">전체 글 보기 <span aria-hidden="true">→</span></Link>
-        </div>
-        <div className="card-grid">
-          {latest.slice(0, 6).map((post) => <ArticleCard key={post.slug} post={post} />)}
-        </div>
-      </section>
-
-      <section className="values-section">
-        <div className="shell values-grid">
-          <div>
-            <p className="kicker">알고가요의 기준</p>
-            <h2>읽는 시간을 아껴드려요</h2>
-          </div>
-          <div className="value-item">
-            <span>01</span>
-            <h3>먼저 결론부터</h3>
-            <p>핵심을 앞에 두고, 필요한 이유와 예시는 뒤에서 차근차근 설명합니다.</p>
-          </div>
-          <div className="value-item">
-            <span>02</span>
-            <h3>직접 할 수 있게</h3>
-            <p>막연한 조언보다 오늘 따라 할 수 있는 순서와 체크리스트를 제공합니다.</p>
-          </div>
-          <div className="value-item">
-            <span>03</span>
-            <h3>과장하지 않게</h3>
-            <p>모든 사람에게 맞는 정답인 것처럼 말하지 않고 조건과 예외를 함께 적습니다.</p>
-          </div>
         </div>
       </section>
     </>

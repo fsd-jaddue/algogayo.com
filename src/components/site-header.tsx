@@ -1,21 +1,19 @@
 import Link from "next/link";
-import { navigation } from "@/lib/site";
+import { navigation, siteConfig } from "@/lib/site";
+import { SiteNav } from "./site-nav";
 
 export function SiteHeader() {
   return (
     <header className="site-header">
-      <div className="shell header-inner">
-        <Link className="brand" href="/" aria-label="알고가요 홈">
-          <span className="brand-mark" aria-hidden="true">알</span>
-          <span>알고가요</span>
+      <div className="shell site-header__inner">
+        <Link className="brand" href="/" aria-label={`${siteConfig.name} 홈`}>
+          <span className="brand__mark" aria-hidden="true">
+            알
+          </span>
+          <span className="brand__name">{siteConfig.name}</span>
         </Link>
-        <nav className="main-nav" aria-label="주요 메뉴">
-          {navigation.map((item) => (
-            <Link key={item.href} href={item.href}>{item.label}</Link>
-          ))}
-        </nav>
+        <SiteNav items={navigation} />
       </div>
     </header>
   );
 }
-

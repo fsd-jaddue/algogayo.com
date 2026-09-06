@@ -1,4 +1,8 @@
-export type CategorySlug = "living" | "digital" | "travel";
+import fs from "node:fs";
+import path from "node:path";
+import matter from "gray-matter";
+import { categories, isCategorySlug, type CategorySlug } from "./categories";
+import { renderMarkdown, type RenderedMarkdown } from "./markdown";
 
 export type Post = {
   slug: string;
@@ -8,125 +12,179 @@ export type Post = {
   categoryLabel: string;
   publishedAt: string;
   updatedAt?: string;
-  readingTime: string;
+  draft: boolean;
   image: string;
   imageAlt: string;
+  summary: string[];
+  checklist: string[];
+  closing?: string;
+  readingTime: string;
+  charCount: number;
+  body: RenderedMarkdown;
 };
 
-export const posts: Post[] = [
-  {
-    slug: "weekly-meal-plan-without-waste",
-    title: "장보기 전 20분, 식비와 음식물 쓰레기를 함께 줄이는 주간 식단법",
-    description:
-      "냉장고 확인부터 공통 재료 고르기, 장보기 목록 작성까지 매주 반복할 수 있는 현실적인 순서를 정리했습니다.",
-    category: "living",
-    categoryLabel: "생활비",
-    publishedAt: "2026-08-28",
-    readingTime: "7분",
-    image: "/images/household-budget.png",
-    imageAlt: "식비 계획표와 계산기, 채소가 놓인 밝은 식탁 일러스트",
-  },
-  {
-    slug: "smartphone-notification-reset",
-    title: "집중력을 되찾는 스마트폰 알림 정리: 30분 설정 가이드",
-    description:
-      "모든 알림을 끄는 극단적인 방법 대신, 놓치면 곤란한 알림만 남기는 기준과 순서를 알려드립니다.",
-    category: "digital",
-    categoryLabel: "디지털",
-    publishedAt: "2026-08-24",
-    readingTime: "6분",
-    image: "/images/digital-organizing.png",
-    imageAlt: "스마트폰과 정돈된 파일 폴더, 타이머가 놓인 책상 일러스트",
-  },
-  {
-    slug: "weekend-trip-light-packing",
-    title: "주말 1박 2일 짐 싸기: 빠뜨리지 않고 가볍게 챙기는 체크리스트",
-    description:
-      "가방 크기부터 옷 조합, 세면도구와 충전기까지 짐을 줄이면서도 불편하지 않은 준비법입니다.",
-    category: "travel",
-    categoryLabel: "여행",
-    publishedAt: "2026-08-18",
-    readingTime: "8분",
-    image: "/images/weekend-travel.png",
-    imageAlt: "주말 여행 준비물이 가지런히 담긴 여행 가방 일러스트",
-  },
-  {
-    slug: "fixed-expense-review",
-    title: "매달 빠져나가는 고정비, 1시간 안에 점검하는 순서",
-    description:
-      "통신비·구독·보험·주거비를 한꺼번에 줄이려다 지치지 않도록, 효과가 큰 항목부터 확인하는 방법입니다.",
-    category: "living",
-    categoryLabel: "생활비",
-    publishedAt: "2026-08-12",
-    readingTime: "7분",
-    image: "/images/household-budget.png",
-    imageAlt: "월 지출을 점검하는 계획표와 계산기가 놓인 식탁 일러스트",
-  },
-  {
-    slug: "photo-backup-three-step",
-    title: "휴대폰 사진이 쌓일 때: 삭제보다 먼저 할 3단계 백업",
-    description:
-      "원본을 잃지 않으면서 중복 사진을 줄이고, 나중에도 찾기 쉬운 폴더 구조를 만드는 방법을 설명합니다.",
-    category: "digital",
-    categoryLabel: "디지털",
-    publishedAt: "2026-08-05",
-    readingTime: "7분",
-    image: "/images/digital-organizing.png",
-    imageAlt: "사진 파일 폴더와 스마트폰이 정리된 작업 공간 일러스트",
-  },
-  {
-    slug: "rainy-day-travel-plan",
-    title: "비 예보가 있는 여행, 일정 전체를 바꾸지 않는 플랜 B 만들기",
-    description:
-      "실내 후보를 무작정 늘리지 않고 이동 동선과 예약 조건을 기준으로 대체 일정을 준비하는 법입니다.",
-    category: "travel",
-    categoryLabel: "여행",
-    publishedAt: "2026-07-29",
-    readingTime: "6분",
-    image: "/images/weekend-travel.png",
-    imageAlt: "지도와 여행용품을 펼쳐 둔 여행 준비 장면 일러스트",
-  },
-  {
-    slug: "grocery-unit-price",
-    title: "대용량이 늘 싼 것은 아니다: 장볼 때 단위 가격 계산하는 법",
-    description:
-      "묶음 할인과 대용량 상품 앞에서 실제로 이득인지 빠르게 판단하는 계산 기준을 예시와 함께 정리했습니다.",
-    category: "living",
-    categoryLabel: "생활비",
-    publishedAt: "2026-07-21",
-    readingTime: "5분",
-    image: "/images/household-budget.png",
-    imageAlt: "장보기 예산을 계산하는 노트와 식재료가 있는 장면 일러스트",
-  },
-  {
-    slug: "password-manager-start",
-    title: "비밀번호 관리 앱을 처음 쓸 때 꼭 정할 네 가지 원칙",
-    description:
-      "도구를 바꾸는 것보다 중요한 마스터 비밀번호, 복구 수단, 2단계 인증과 기기 관리의 기본을 다룹니다.",
-    category: "digital",
-    categoryLabel: "디지털",
-    publishedAt: "2026-07-14",
-    readingTime: "8분",
-    image: "/images/digital-organizing.png",
-    imageAlt: "스마트폰과 디지털 파일이 정돈된 책상 일러스트",
-  },
-];
+const POSTS_DIR = path.join(process.cwd(), "content", "posts");
+const PUBLIC_DIR = path.join(process.cwd(), "public");
+const CHARS_PER_MINUTE = 500;
+const MIN_BODY_CHARS = 900;
+const DESCRIPTION_RANGE = [40, 160] as const;
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
-export const categoryInfo: Record<
-  CategorySlug,
-  { name: string; description: string }
-> = {
-  living: {
-    name: "생활비",
-    description: "무리한 절약보다 오래 유지할 수 있는 지출 관리 방법을 다룹니다.",
-  },
-  digital: {
-    name: "디지털",
-    description: "기기와 파일, 알림을 단순하게 정리해 시간을 되찾는 방법을 다룹니다.",
-  },
-  travel: {
-    name: "여행",
-    description: "준비는 가볍게, 현지에서는 덜 헤매는 실용적인 여행 습관을 다룹니다.",
-  },
-};
+/** 개발 서버에서는 초안(draft: true)도 보여 주고, 프로덕션 빌드에서는 제외한다. */
+const includeDrafts = process.env.NODE_ENV !== "production";
 
+function fail(file: string, message: string): never {
+  throw new Error(`[content/posts/${file}] ${message}`);
+}
+
+function readString(data: Record<string, unknown>, key: string, file: string, required = true) {
+  const value = data[key];
+  if (value === undefined || value === null || value === "") {
+    if (required) fail(file, `frontmatter에 ${key}가 필요합니다`);
+    return undefined;
+  }
+  if (typeof value !== "string") fail(file, `${key}는 문자열이어야 합니다`);
+  return value.trim();
+}
+
+function readDate(data: Record<string, unknown>, key: string, file: string, required: boolean) {
+  const value = data[key];
+  if (value === undefined || value === null || value === "") {
+    if (required) fail(file, `frontmatter에 ${key}가 필요합니다`);
+    return undefined;
+  }
+  // YAML은 따옴표 없는 날짜를 Date로 파싱한다. 두 경우 모두 YYYY-MM-DD 문자열로 정규화한다.
+  const text = value instanceof Date ? value.toISOString().slice(0, 10) : String(value).trim();
+  if (!DATE_PATTERN.test(text) || Number.isNaN(Date.parse(text))) {
+    fail(file, `${key}는 YYYY-MM-DD 형식이어야 합니다 (현재: ${String(value)})`);
+  }
+  return text;
+}
+
+function readStringList(data: Record<string, unknown>, key: string, file: string) {
+  const value = data[key];
+  if (value === undefined || value === null) return [];
+  if (!Array.isArray(value) || value.some((item) => typeof item !== "string")) {
+    fail(file, `${key}는 문자열 목록이어야 합니다`);
+  }
+  return (value as string[]).map((item) => item.trim()).filter(Boolean);
+}
+
+function loadPost(file: string): Post {
+  const slug = file.replace(/\.md$/, "");
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+    fail(file, "파일 이름(slug)은 소문자 영문·숫자·하이픈만 사용할 수 있습니다");
+  }
+
+  const raw = fs.readFileSync(path.join(POSTS_DIR, file), "utf8");
+  const { data, content } = matter(raw);
+
+  const title = readString(data, "title", file)!;
+  const description = readString(data, "description", file)!;
+  if (description.length < DESCRIPTION_RANGE[0] || description.length > DESCRIPTION_RANGE[1]) {
+    fail(file, `description은 ${DESCRIPTION_RANGE[0]}~${DESCRIPTION_RANGE[1]}자여야 합니다 (현재 ${description.length}자)`);
+  }
+
+  const categorySlug = readString(data, "category", file)!;
+  if (!isCategorySlug(categorySlug)) {
+    fail(file, `category는 ${Object.keys(categories).join(" | ")} 중 하나여야 합니다 (현재: ${categorySlug})`);
+  }
+  const category = categories[categorySlug];
+
+  const publishedAt = readDate(data, "publishedAt", file, true)!;
+  const updatedAt = readDate(data, "updatedAt", file, false);
+  if (updatedAt && updatedAt < publishedAt) fail(file, "updatedAt은 publishedAt보다 빠를 수 없습니다");
+
+  const draft = data.draft === true;
+
+  const image = readString(data, "image", file, false) ?? category.fallbackImage;
+  if (!image.startsWith("/images/")) fail(file, "image는 /images/ 아래 경로여야 합니다");
+  if (!fs.existsSync(path.join(PUBLIC_DIR, image))) fail(file, `이미지 파일이 없습니다: public${image}`);
+  const imageAlt = readString(data, "imageAlt", file, false) ?? category.fallbackImageAlt;
+
+  const body = renderMarkdown(content);
+  if (body.sections.length === 0) fail(file, "본문에 ## 소제목이 하나 이상 필요합니다");
+  if (body.charCount < MIN_BODY_CHARS) {
+    fail(file, `본문이 너무 짧습니다 (${body.charCount}자, 최소 ${MIN_BODY_CHARS}자)`);
+  }
+
+  const summary = readStringList(data, "summary", file);
+  const checklist = readStringList(data, "checklist", file);
+  const closing = readString(data, "closing", file, false);
+  // 읽기 시간과 글자 수는 요약·체크리스트·마무리까지 포함한 전체 분량으로 계산한다.
+  const charCount =
+    body.charCount + [...summary, ...checklist, closing ?? ""].join("").replace(/\s+/g, "").length;
+
+  return {
+    slug,
+    title,
+    description,
+    category: categorySlug,
+    categoryLabel: category.name,
+    publishedAt,
+    updatedAt,
+    draft,
+    image,
+    imageAlt,
+    summary,
+    checklist,
+    closing,
+    readingTime: `${Math.max(1, Math.ceil(charCount / CHARS_PER_MINUTE))}분`,
+    charCount,
+    body,
+  };
+}
+
+let cache: Post[] | undefined;
+
+function loadAll(): Post[] {
+  if (cache) return cache;
+  if (!fs.existsSync(POSTS_DIR)) throw new Error("content/posts 디렉터리가 없습니다");
+
+  const files = fs.readdirSync(POSTS_DIR).filter((file) => file.endsWith(".md"));
+  const posts = files.map(loadPost);
+
+  const seen = new Set<string>();
+  for (const post of posts) {
+    if (seen.has(post.slug)) fail(`${post.slug}.md`, "같은 slug의 글이 두 개 이상 있습니다");
+    seen.add(post.slug);
+  }
+
+  posts.sort((a, b) => (a.publishedAt === b.publishedAt ? a.title.localeCompare(b.title, "ko") : b.publishedAt.localeCompare(a.publishedAt)));
+  cache = posts;
+  return posts;
+}
+
+/** 공개된 글을 최신순으로 반환한다. 개발 서버에서는 초안도 포함한다. */
+export function getAllPosts(): Post[] {
+  return loadAll().filter((post) => includeDrafts || !post.draft);
+}
+
+export function getPostBySlug(slug: string): Post | undefined {
+  return getAllPosts().find((post) => post.slug === slug);
+}
+
+export function getPostsByCategory(category: CategorySlug): Post[] {
+  return getAllPosts().filter((post) => post.category === category);
+}
+
+/** 이전 글(더 오래된 글)과 다음 글(더 새로운 글). */
+export function getAdjacentPosts(slug: string): { previous?: Post; next?: Post } {
+  const posts = getAllPosts();
+  const index = posts.findIndex((post) => post.slug === slug);
+  if (index === -1) return {};
+  return { previous: posts[index + 1], next: posts[index - 1] };
+}
+
+/** 같은 카테고리의 다른 글을 우선하고, 부족하면 다른 카테고리 최신 글로 채운다. */
+export function getRelatedPosts(post: Post, limit = 3): Post[] {
+  const others = getAllPosts().filter((item) => item.slug !== post.slug);
+  const sameCategory = others.filter((item) => item.category === post.category);
+  const rest = others.filter((item) => item.category !== post.category);
+  return [...sameCategory, ...rest].slice(0, limit);
+}
+
+/** 글 집합의 가장 최근 수정일(YYYY-MM-DD). 비어 있으면 undefined. */
+export function getLastModified(posts: Post[]): string | undefined {
+  return posts.map((post) => post.updatedAt ?? post.publishedAt).sort().at(-1);
+}
