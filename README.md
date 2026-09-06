@@ -15,6 +15,10 @@ pnpm lint
 pnpm typecheck    # next typegen && tsc --noEmit
 ```
 
+## 이어서 작업하기
+
+지금까지의 작업 내용, 남은 일, 주의사항은 [`docs/handoff.md`](docs/handoff.md)에, 전체 계획은 [`docs/plan.md`](docs/plan.md)에 있습니다.
+
 ## 글 쓰기
 
 - 글은 `content/posts/<slug>.md` 하나로 관리합니다. 작성 방법, 템플릿, 검증 규칙은 [`docs/writing-guide.md`](docs/writing-guide.md).
