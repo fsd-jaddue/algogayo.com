@@ -91,7 +91,6 @@ export default function AboutPage() {
               <strong>{author.name}</strong>
               <span>{author.role}</span>
             </p>
-            <p>{author.bio}</p>
             <p>
               글은 운영자가 직접 자료를 찾아 정리하고, 실제로 해 본 뒤 순서를 다듬어 씁니다. 잘못된 내용이나 오래된
               정보를 발견하면 <Link href="/contact">문의 페이지</Link>로 알려주세요. 확인 후 글을 고치고 수정일을

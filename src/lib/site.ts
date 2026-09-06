@@ -6,14 +6,10 @@ export const siteConfig = {
   url: "https://algogayo.com",
   email: "contact@algogayo.com",
   locale: "ko_KR",
-  /**
-   * 운영자 정보. 필명은 소개 페이지, 글 하단 작성자 박스, JSON-LD(Person)에 함께 쓰입니다.
-   * TODO: 실제 사용할 필명과 소개로 바꾸세요.
-   */
+  /** 운영자 정보. 필명은 소개 페이지, 글 하단 작성자 박스, 개인정보처리방침, JSON-LD(Person)에 함께 쓰입니다. */
   author: {
-    name: "알고지기",
-    role: "알고가요 운영자",
-    bio: "생활비, 디지털 정리, 가벼운 여행처럼 누구나 겪는 일을 미리 알고 가면 덜 헤맨다는 생각으로 글을 씁니다. 직접 해 본 순서와 확인한 기준만 적고, 조건에 따라 달라지는 부분은 그대로 밝힙니다.",
+    name: "알고가요",
+    role: "운영자",
     url: "/about",
   },
   adsense: {

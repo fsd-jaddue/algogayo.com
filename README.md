@@ -54,7 +54,7 @@ AdSense 게시자 ID(`ca-pub-…`)는 공개 정보이므로 `src/lib/site.ts` �
 
 ## 운영자 정보 바꾸기
 
-`src/lib/site.ts` 의 `author` (필명, 역할, 소개)와 `email` 을 고치면 소개 페이지, 글 하단 작성자 박스, 개인정보처리방침의 보호책임자, JSON-LD에 함께 반영됩니다.
+`src/lib/site.ts` 의 `author` (필명, 역할)와 `email` 을 고치면 소개 페이지, 글 하단 작성자 박스, 개인정보처리방침의 보호책임자, JSON-LD에 함께 반영됩니다.
 
 ## 검색엔진·AdSense
 

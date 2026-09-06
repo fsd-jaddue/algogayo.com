@@ -13,7 +13,7 @@ export function AuthorBox() {
           <strong>{author.name}</strong>
           <span>{author.role}</span>
         </p>
-        <p>{author.bio}</p>
+        <p>직접 확인한 순서와 기준만 적고, 조건에 따라 달라지는 부분은 그대로 밝힙니다.</p>
         <Link className="text-link" href={author.url}>
           운영자와 편집 원칙 보기 <span aria-hidden="true">→</span>
         </Link>
