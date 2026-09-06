@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 이미지 원본 (용량이 커서 제외, 변환본 public/images/** 만 커밋)
+/assets/images-src/
