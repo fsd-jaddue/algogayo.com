@@ -1,17 +1,18 @@
-import { absoluteUrl, siteConfig } from "./site";
+import { toIsoDateTime } from "./legal";
 import type { Post } from "./posts";
+import { absoluteUrl, siteConfig } from "./site";
 
 const publisher = {
   "@type": "Organization",
   name: siteConfig.name,
   url: siteConfig.url,
-  logo: { "@type": "ImageObject", url: absoluteUrl("/icon.svg") },
+  logo: { "@type": "ImageObject", url: absoluteUrl("/icons/icon-512.png"), width: 512, height: 512 },
 };
 
 const author = {
   "@type": "Person",
   name: siteConfig.author.name,
-  description: siteConfig.author.role,
+  jobTitle: siteConfig.author.role,
   url: absoluteUrl(siteConfig.author.url),
 };
 
@@ -35,10 +36,9 @@ export function articleJsonLd(post: Post) {
     headline: post.title,
     description: post.description,
     image: absoluteUrl(post.image),
-    datePublished: post.publishedAt,
-    dateModified: post.updatedAt ?? post.publishedAt,
+    datePublished: toIsoDateTime(post.publishedAt),
+    dateModified: toIsoDateTime(post.updatedAt ?? post.publishedAt),
     inLanguage: "ko-KR",
-    wordCount: post.charCount,
     articleSection: post.categoryLabel,
     mainEntityOfPage: { "@type": "WebPage", "@id": absoluteUrl(`/articles/${post.slug}`) },
     author,
@@ -46,6 +46,7 @@ export function articleJsonLd(post: Post) {
   };
 }
 
+/** 화면에 보이는 빵부스러기와 같은 항목만 넘겨야 한다(구조화 데이터는 보이는 내용과 일치해야 함). */
 export function breadcrumbJsonLd(items: { name: string; href: string }[]) {
   return {
     "@context": "https://schema.org",

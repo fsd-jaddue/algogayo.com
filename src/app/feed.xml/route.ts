@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+import { toIsoDateTime } from "@/lib/legal";
 import { getAllPosts } from "@/lib/posts";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
@@ -25,7 +28,14 @@ function cdata(value: string) {
 }
 
 function toRfc822(date: string) {
-  return new Date(`${date}T09:00:00+09:00`).toUTCString();
+  return new Date(toIsoDateTime(date)).toUTCString();
+}
+
+/** RSS enclosure는 실제 바이트 수를 요구한다. 로더가 이미지 존재를 검증했으므로 빌드 시점에 크기를 읽는다. */
+function imageEnclosure(image: string) {
+  const size = fs.statSync(path.join(process.cwd(), "public", image)).size;
+  const type = image.endsWith(".png") ? "image/png" : "image/jpeg";
+  return `<enclosure url="${absoluteUrl(image)}" type="${type}" length="${size}" />`;
 }
 
 export function GET() {
@@ -45,7 +55,7 @@ export function GET() {
       <dc:creator>${escapeXml(siteConfig.author.name)}</dc:creator>
       <description>${escapeXml(post.description)}</description>
       <content:encoded>${cdata(html)}</content:encoded>
-      <enclosure url="${absoluteUrl(post.image)}" type="${post.image.endsWith(".png") ? "image/png" : "image/jpeg"}" length="0" />
+      ${imageEnclosure(post.image)}
     </item>`;
     })
     .join("\n");

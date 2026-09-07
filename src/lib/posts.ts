@@ -135,13 +135,21 @@ function loadPost(file: string): Post {
   };
 }
 
-let cache: Post[] | undefined;
+// 파일 이름과 수정 시각으로 캐시를 무효화한다. 마크다운은 번들 모듈이 아니어서
+// 개발 서버가 변경을 감지하지 못하므로, 글을 고치면 새로고침만으로 반영되게 한다.
+let cache: { signature: string; posts: Post[] } | undefined;
+
+function signatureOf(files: string[]) {
+  return files.map((file) => `${file}:${fs.statSync(path.join(POSTS_DIR, file)).mtimeMs}`).join("|");
+}
 
 function loadAll(): Post[] {
-  if (cache) return cache;
   if (!fs.existsSync(POSTS_DIR)) throw new Error("content/posts 디렉터리가 없습니다");
 
   const files = fs.readdirSync(POSTS_DIR).filter((file) => file.endsWith(".md"));
+  const signature = signatureOf(files);
+  if (cache?.signature === signature) return cache.posts;
+
   const posts = files.map(loadPost);
 
   const seen = new Set<string>();
@@ -151,7 +159,7 @@ function loadAll(): Post[] {
   }
 
   posts.sort((a, b) => (a.publishedAt === b.publishedAt ? a.title.localeCompare(b.title, "ko") : b.publishedAt.localeCompare(a.publishedAt)));
-  cache = posts;
+  cache = { signature, posts };
   return posts;
 }
 

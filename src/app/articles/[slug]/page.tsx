@@ -8,8 +8,8 @@ import { AuthorBox } from "@/components/author-box";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { JsonLd } from "@/components/json-ld";
 import { PostNav } from "@/components/post-nav";
-import { formatDate } from "@/lib/legal";
-import { getAdjacentPosts, getAllPosts, getPostBySlug, getRelatedPosts, type Post } from "@/lib/posts";
+import { formatDate, toIsoDateTime } from "@/lib/legal";
+import { getAdjacentPosts, getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/posts";
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 
@@ -19,17 +19,15 @@ export function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));
 }
 
-/** 카테고리 폴백 이미지는 원본 크기가 다르다. */
-function imageSize(post: Post) {
-  return post.image.startsWith("/images/posts/") ? { width: 1600, height: 900 } : { width: 1672, height: 941 };
-}
+/** 대표 이미지와 카테고리 폴백 이미지는 모두 `pnpm images`가 만드는 1600×900 JPG다. */
+const IMAGE_SIZE = { width: 1600, height: 900 };
 
 export async function generateMetadata({ params }: PageProps<"/articles/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) return {};
 
-  const image = { url: post.image, alt: post.imageAlt, ...imageSize(post) };
+  const image = { url: post.image, alt: post.imageAlt, ...IMAGE_SIZE };
   return {
     title: post.title,
     description: post.description,
@@ -41,8 +39,8 @@ export async function generateMetadata({ params }: PageProps<"/articles/[slug]">
       description: post.description,
       url: `/articles/${post.slug}`,
       images: [image],
-      publishedTime: post.publishedAt,
-      modifiedTime: post.updatedAt ?? post.publishedAt,
+      publishedTime: toIsoDateTime(post.publishedAt),
+      modifiedTime: toIsoDateTime(post.updatedAt ?? post.publishedAt),
       authors: [siteConfig.author.name],
       section: post.categoryLabel,
     },
@@ -62,16 +60,16 @@ export default async function ArticlePage({ params }: PageProps<"/articles/[slug
 
   const { previous, next } = getAdjacentPosts(post.slug);
   const related = getRelatedPosts(post, 3);
+  // 글 제목은 바로 아래 h1으로 보이므로 빵부스러기에는 넣지 않는다. JSON-LD도 보이는 항목과 같게 유지한다.
   const crumbs = [
     { name: "홈", href: "/" },
     { name: post.categoryLabel, href: `/category/${post.category}` },
-    { name: post.title, href: `/articles/${post.slug}` },
   ];
 
   return (
     <article className="article">
       <header className="article__head shell shell--narrow">
-        <Breadcrumb items={crumbs.slice(0, 2)} />
+        <Breadcrumb items={crumbs} />
         <p className="kicker">
           {post.categoryLabel}
           {post.draft && " · 초안"}
