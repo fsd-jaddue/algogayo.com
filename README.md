@@ -37,10 +37,12 @@ pnpm typecheck    # next typegen && tsc --noEmit
 content/posts/          글 (마크다운 + frontmatter)
 docs/                   작성 가이드, 이미지 프롬프트
 scripts/                이미지 변환, OG 생성
-src/app/                라우트 (홈, 전체 글, 글, 카테고리, 소개, 문의, 개인정보, 약관, feed.xml, sitemap, robots)
-src/components/         헤더·내비, 푸터, 카드, 목차, 본문, 작성자, 이전/다음
-src/lib/site.ts         사이트 이름, 운영자(필명), AdSense 게시자 ID, 검색엔진 확인값
-src/lib/categories.ts   카테고리 3개와 기본 이미지
+src/app/                라우트 (홈, 전체 글, 글, 카테고리, 소개, 문의, 개인정보, 약관, 404, feed.xml, sitemap, robots, manifest)
+                        + 파일 규칙 메타데이터: favicon.ico, icon.svg, apple-icon.png, opengraph-image.png, twitter-image.png (+ .alt.txt)
+src/components/         헤더·내비, 푸터, 카드, 카테고리 레일, 빵부스러기, 페이지 머리, 목차, 본문, 작성자, 이전/다음, JSON-LD
+src/lib/site.ts         사이트 이름, 운영자(필명), AdSense 게시자 ID, 검색엔진 확인값, 내비게이션
+src/lib/categories.ts   카테고리 3개와 폴백 이미지(public/images/categories/<slug>.jpg)
+public/icons/           매니페스트·JSON-LD용 PNG 아이콘 (pnpm og 로 생성)
 src/lib/posts.ts        마크다운 로더와 검증
 src/lib/markdown.ts     마크다운 → HTML, 소제목 분리, 목차
 src/lib/seo.ts          JSON-LD (WebSite, Article, BreadcrumbList, Person)

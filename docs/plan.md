@@ -54,9 +54,9 @@ GPT/Codex로 만든 Next.js 16 사이트로 AdSense 승인을 **신청한 상태
 | AdSense 코드 | 현재 `<head>`의 `<script async src=…adsbygoogle.js>` + `google-adsense-account` 메타 + `ads.txt` **유지** | 심사 크롤러가 SSR HTML에서 그대로 확인. 광고 단위는 승인 후 |
 | 광고 자리 | `<AdSlot>` 클라이언트 컴포넌트를 **승인 후** 추가(슬롯 id 상수, id 비면 null, `data-adsbygoogle-status` 확인 후 push, pathname key, min-height 예약) | 심사 중 빈 광고 자리는 무의미 |
 | 분석 | GA4 넣지 않음 | Search Console·네이버·AdSense 리포트로 충분. 쿠키·동의 표면 축소 |
-| 작성자 | `siteConfig.author = { name: 필명, role, bio, email }` | 사용자 결정 |
+| 작성자 | `siteConfig.author = { name: 필명, role, url }`, 이메일은 `siteConfig.email` (bio는 이후 결정으로 제거, 필명 = 사이트명) | 사용자 결정 |
 | 이미지 규약 | `public/images/posts/<slug>.jpg`(1600×900). 없으면 `public/images/<category>.png`(기존 3장) 폴백. PNG 변환·삭제 안 함 | `next/image`가 요청 시 WebP로 변환 |
-| 게시 방식 | 신규 12편은 `draft: true`로 커밋 → **3~4편씩 3회, 열흘 안에** 실제 날짜로 게시 → 색인 확인 후 재신청 | 하루에 12편은 대량 생산으로 보임. 심사 시점엔 20편 모두 공개 |
+| 게시 방식 | 신규 12편은 `draft: true`로 커밋 → **3~4편씩 3회, 열흘 안에** 실제 날짜로 게시 → 색인 확인 후 재신청. **(2026-09-07 변경: 사용자 결정으로 12편을 `publishedAt: 2026-09-07`로 한 번에 공개함. 본인 경험 추가는 게시 후 `updatedAt`을 갱신하며 진행)** | 하루에 12편은 대량 생산으로 보임. 심사 시점엔 20편 모두 공개 |
 | 다크 모드·검색·공유·CI | 하지 않음/연기 | 20편 규모에 불필요. Vercel 프리뷰 빌드가 게이트 |
 | 라우팅 | URL 유지, `dynamicParams = false` | 알 수 없는 slug는 404 |
 
@@ -146,7 +146,7 @@ closing: >-                 # 선택
 
 ### Phase 2 — 콘텐츠 파이프라인 (시각 변화 없음)
 1. `markdown.ts`: 마크다운 → hast → h2마다 `section-1…n` → **hast children을 h2 경계로 분리**(HTML 문자열 split 금지) → 섹션별 HTML + TOC + 글자 수.
-2. `posts.ts`: `content/posts` 읽기 → 검증(필수 필드, 고유 slug, ISO 날짜, category, image 존재, description 70~160자, 본문 ≥ 1,500자) → throw → `draft` 제외 → 날짜 내림차순.
+2. `posts.ts`: `content/posts` 읽기 → 검증(필수 필드, 고유 slug, ISO 날짜, category, image 존재, description 40~160자, 본문 ≥ 900자(공백 제외; 구현 시 완화한 값, 목표는 1,800자 이상)) → throw → `draft` 제외 → 날짜 내림차순.
 3. `scripts/migrate-posts.mjs`로 8편 변환·커밋 후 삭제. 텍스트·날짜 불변. 소제목의 "1. " 접두 제거(번호는 CSS 카운터).
 4. 페이지 연결, `post-content.ts` 삭제. 빌드·배포.
 
@@ -319,7 +319,7 @@ curl -s -A "Mediapartners-Google" -o /dev/null -w '%{http_code}\n' https://algog
 - **Tailwind 제거로 제목 굵기·리스트 여백 변화** → 리셋을 같은 커밋에, 전 페이지 육안 확인.
 - **기존 글 날짜**(사이트 생성 전 날짜) → 유지. 텍스트 손보면 `updatedAt`만 실제 날짜. 신규 글은 실제 게시일.
 - **필명 보호책임자** → 법적 완결성은 사용자가 감수. 역할·도달 가능한 이메일 표기.
-- **12편 일괄 게시** → `draft`로 3회 분할.
+- **12편 일괄 게시** → `draft`로 3회 분할하기로 했으나, 2026-09-07 사용자 결정으로 12편을 한 번에 공개함. 재신청은 색인 확인 후에 하므로 게시 간격보다 색인 상태를 본다.
 - **이미지 교체 후 alt·About 문구** → "사진"·"촬영" 표현 금지, 장면 묘사만.
 - **재신청 타이밍** → 20편 색인 확인 전 신청하면 같은 사유로 거절될 수 있음. 체크리스트 통과 후.
 - **작업량** → Phase 0~4를 먼저 배포하고 Phase 5는 4편씩 3회 커밋.
