@@ -6,7 +6,7 @@ import { PageHead } from "@/components/page-head";
 import { breadcrumbJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
-const description = "알고가요에 글 제안, 오류 신고, 개인정보 및 콘텐츠 이용 문의를 보내는 방법과 처리 기간을 안내합니다.";
+const description = "알고가요에 글 제안, 오류 신고, 개인정보 및 콘텐츠 이용 문의를 보내는 방법을 안내합니다.";
 
 export const metadata: Metadata = {
   title: "문의하기",
@@ -43,7 +43,7 @@ export default function ContactPage() {
         <section className="contact-card contact-card--primary" aria-labelledby="contact-email">
           <p className="kicker">이메일</p>
           <h2 id="contact-email">{siteConfig.email}</h2>
-          <p>문의를 확인한 뒤 순서대로 답변드립니다. 답변에는 영업일 기준 3~5일이 걸릴 수 있습니다.</p>
+          <p>문의를 확인한 뒤 순서대로 답변드립니다. 확인에 며칠이 걸릴 수 있습니다.</p>
           <a className="button button--light" href={`mailto:${siteConfig.email}?subject=${subject}`}>
             이메일 보내기
           </a>
