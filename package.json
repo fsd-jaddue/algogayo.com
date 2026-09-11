@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint && node scripts/check-content.mjs",
+    "check:content": "node scripts/check-content.mjs",
+    "check:drafts": "POSTS_DIR=src/content/drafts node scripts/check-content.mjs",
+    "images": "node scripts/optimize-images.mjs && node scripts/render-covers.mjs"
   },
   "dependencies": {
     "next": "16.3.4",
@@ -20,6 +23,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
+    "sharp": "0.35.4",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

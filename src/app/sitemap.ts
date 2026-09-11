@@ -1,20 +1,23 @@
 import type { MetadataRoute } from "next";
-import { categoryInfo, posts } from "@/lib/posts";
-import { siteConfig } from "@/lib/site";
+import { categorySlugs, getCategoryLatestDate, getLatestUpdateDate, posts } from "@/lib/posts";
+import { legalEffectiveDate, siteConfig } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const latest = getLatestUpdateDate();
+
   const staticPages: MetadataRoute.Sitemap = [
-    { url: siteConfig.url, lastModified: "2026-09-05", changeFrequency: "weekly", priority: 1 },
-    { url: `${siteConfig.url}/articles`, lastModified: "2026-09-05", changeFrequency: "weekly", priority: 0.9 },
-    { url: `${siteConfig.url}/about`, lastModified: "2026-09-05", changeFrequency: "monthly", priority: 0.6 },
-    { url: `${siteConfig.url}/contact`, lastModified: "2026-09-05", changeFrequency: "yearly", priority: 0.4 },
-    { url: `${siteConfig.url}/privacy`, lastModified: "2026-09-05", changeFrequency: "yearly", priority: 0.3 },
-    { url: `${siteConfig.url}/terms`, lastModified: "2026-09-05", changeFrequency: "yearly", priority: 0.3 },
+    { url: siteConfig.url, lastModified: latest, changeFrequency: "weekly", priority: 1 },
+    { url: `${siteConfig.url}/articles`, lastModified: latest, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${siteConfig.url}/about`, lastModified: legalEffectiveDate, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${siteConfig.url}/contact`, lastModified: legalEffectiveDate, changeFrequency: "yearly", priority: 0.4 },
+    { url: `${siteConfig.url}/privacy`, lastModified: legalEffectiveDate, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${siteConfig.url}/terms`, lastModified: legalEffectiveDate, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${siteConfig.url}/disclaimer`, lastModified: legalEffectiveDate, changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  const categoryPages: MetadataRoute.Sitemap = Object.keys(categoryInfo).map((slug) => ({
+  const categoryPages: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
     url: `${siteConfig.url}/category/${slug}`,
-    lastModified: "2026-09-05",
+    lastModified: getCategoryLatestDate(slug),
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));
@@ -29,4 +32,3 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...staticPages, ...categoryPages, ...articlePages];
 }
-

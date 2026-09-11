@@ -1,132 +1,112 @@
-export type CategorySlug = "living" | "digital" | "travel";
+import { entries } from "@/content";
+import type { CategorySlug, Post, PostContent, PostEntry } from "@/lib/content-types";
+import { computeReadingTime, countCharacters } from "@/lib/reading-time";
 
-export type Post = {
-  slug: string;
-  title: string;
+export type { CategorySlug, Post, PostContent } from "@/lib/content-types";
+
+export type CategoryInfo = {
+  name: string;
+  /** 카드·메타 설명용 한 줄 */
   description: string;
-  category: CategorySlug;
-  categoryLabel: string;
-  publishedAt: string;
-  updatedAt?: string;
-  readingTime: string;
-  image: string;
-  imageAlt: string;
+  /** 카테고리 페이지 상단 소개문 */
+  longDescription: string;
 };
 
-export const posts: Post[] = [
-  {
-    slug: "weekly-meal-plan-without-waste",
-    title: "장보기 전 20분, 식비와 음식물 쓰레기를 함께 줄이는 주간 식단법",
-    description:
-      "냉장고 확인부터 공통 재료 고르기, 장보기 목록 작성까지 매주 반복할 수 있는 현실적인 순서를 정리했습니다.",
-    category: "living",
-    categoryLabel: "생활비",
-    publishedAt: "2026-08-28",
-    readingTime: "7분",
-    image: "/images/household-budget.png",
-    imageAlt: "식비 계획표와 계산기, 채소가 놓인 밝은 식탁 일러스트",
-  },
-  {
-    slug: "smartphone-notification-reset",
-    title: "집중력을 되찾는 스마트폰 알림 정리: 30분 설정 가이드",
-    description:
-      "모든 알림을 끄는 극단적인 방법 대신, 놓치면 곤란한 알림만 남기는 기준과 순서를 알려드립니다.",
-    category: "digital",
-    categoryLabel: "디지털",
-    publishedAt: "2026-08-24",
-    readingTime: "6분",
-    image: "/images/digital-organizing.png",
-    imageAlt: "스마트폰과 정돈된 파일 폴더, 타이머가 놓인 책상 일러스트",
-  },
-  {
-    slug: "weekend-trip-light-packing",
-    title: "주말 1박 2일 짐 싸기: 빠뜨리지 않고 가볍게 챙기는 체크리스트",
-    description:
-      "가방 크기부터 옷 조합, 세면도구와 충전기까지 짐을 줄이면서도 불편하지 않은 준비법입니다.",
-    category: "travel",
-    categoryLabel: "여행",
-    publishedAt: "2026-08-18",
-    readingTime: "8분",
-    image: "/images/weekend-travel.png",
-    imageAlt: "주말 여행 준비물이 가지런히 담긴 여행 가방 일러스트",
-  },
-  {
-    slug: "fixed-expense-review",
-    title: "매달 빠져나가는 고정비, 1시간 안에 점검하는 순서",
-    description:
-      "통신비·구독·보험·주거비를 한꺼번에 줄이려다 지치지 않도록, 효과가 큰 항목부터 확인하는 방법입니다.",
-    category: "living",
-    categoryLabel: "생활비",
-    publishedAt: "2026-08-12",
-    readingTime: "7분",
-    image: "/images/household-budget.png",
-    imageAlt: "월 지출을 점검하는 계획표와 계산기가 놓인 식탁 일러스트",
-  },
-  {
-    slug: "photo-backup-three-step",
-    title: "휴대폰 사진이 쌓일 때: 삭제보다 먼저 할 3단계 백업",
-    description:
-      "원본을 잃지 않으면서 중복 사진을 줄이고, 나중에도 찾기 쉬운 폴더 구조를 만드는 방법을 설명합니다.",
-    category: "digital",
-    categoryLabel: "디지털",
-    publishedAt: "2026-08-05",
-    readingTime: "7분",
-    image: "/images/digital-organizing.png",
-    imageAlt: "사진 파일 폴더와 스마트폰이 정리된 작업 공간 일러스트",
-  },
-  {
-    slug: "rainy-day-travel-plan",
-    title: "비 예보가 있는 여행, 일정 전체를 바꾸지 않는 플랜 B 만들기",
-    description:
-      "실내 후보를 무작정 늘리지 않고 이동 동선과 예약 조건을 기준으로 대체 일정을 준비하는 법입니다.",
-    category: "travel",
-    categoryLabel: "여행",
-    publishedAt: "2026-07-29",
-    readingTime: "6분",
-    image: "/images/weekend-travel.png",
-    imageAlt: "지도와 여행용품을 펼쳐 둔 여행 준비 장면 일러스트",
-  },
-  {
-    slug: "grocery-unit-price",
-    title: "대용량이 늘 싼 것은 아니다: 장볼 때 단위 가격 계산하는 법",
-    description:
-      "묶음 할인과 대용량 상품 앞에서 실제로 이득인지 빠르게 판단하는 계산 기준을 예시와 함께 정리했습니다.",
-    category: "living",
-    categoryLabel: "생활비",
-    publishedAt: "2026-07-21",
-    readingTime: "5분",
-    image: "/images/household-budget.png",
-    imageAlt: "장보기 예산을 계산하는 노트와 식재료가 있는 장면 일러스트",
-  },
-  {
-    slug: "password-manager-start",
-    title: "비밀번호 관리 앱을 처음 쓸 때 꼭 정할 네 가지 원칙",
-    description:
-      "도구를 바꾸는 것보다 중요한 마스터 비밀번호, 복구 수단, 2단계 인증과 기기 관리의 기본을 다룹니다.",
-    category: "digital",
-    categoryLabel: "디지털",
-    publishedAt: "2026-07-14",
-    readingTime: "8분",
-    image: "/images/digital-organizing.png",
-    imageAlt: "스마트폰과 디지털 파일이 정돈된 책상 일러스트",
-  },
-];
-
-export const categoryInfo: Record<
-  CategorySlug,
-  { name: string; description: string }
-> = {
+export const categoryInfo: Record<CategorySlug, CategoryInfo> = {
   living: {
     name: "생활비",
     description: "무리한 절약보다 오래 유지할 수 있는 지출 관리 방법을 다룹니다.",
+    longDescription:
+      "생활비 카테고리는 매달 반복되는 지출을 다룹니다. 통신비·구독·보험처럼 자동으로 빠져나가는 고정비, 장보기와 식비처럼 습관에 따라 크게 달라지는 변동비, 전기·가스 요금처럼 고지서를 읽을 줄 알아야 줄일 수 있는 공과금이 주요 주제입니다. 무리한 절약법 대신 한 달에 한 번 점검해도 유지되는 순서와 기준, 그리고 직접 계산해 볼 수 있는 예시를 함께 제공합니다. 요금과 제도는 바뀌기 때문에 글마다 공식 출처와 확인 날짜를 밝힙니다.",
   },
   digital: {
     name: "디지털",
     description: "기기와 파일, 알림을 단순하게 정리해 시간을 되찾는 방법을 다룹니다.",
+    longDescription:
+      "디지털 카테고리는 스마트폰, 클라우드, 계정처럼 매일 쓰지만 정리는 미루기 쉬운 것들을 다룹니다. 알림과 저장 공간을 정돈해 집중력을 되찾는 법, 사진과 문서를 잃지 않는 백업 습관, 비밀번호·2단계 인증·스미싱 대응처럼 사고를 막는 보안 기본기가 주요 주제입니다. 특정 기기나 앱을 홍보하지 않고, iOS와 Android, 주요 서비스에서 공통으로 쓸 수 있는 설정 경로와 판단 기준을 순서대로 설명합니다.",
   },
   travel: {
     name: "여행",
     description: "준비는 가볍게, 현지에서는 덜 헤매는 실용적인 여행 습관을 다룹니다.",
+    longDescription:
+      "여행 카테고리는 떠나기 전 준비를 가볍게 만드는 방법을 다룹니다. 짐 싸기와 예산 세우기, 기차·숙소 예약과 취소 규정 확인, 비 예보나 아이 동반처럼 변수가 있는 일정을 계획하는 법이 주요 주제입니다. 관광지 추천보다 어디를 가든 반복해서 쓸 수 있는 체크리스트와 판단 기준에 집중하며, 요금과 규정은 운영 기관의 공식 안내를 기준으로 확인 날짜와 함께 적습니다.",
   },
 };
 
+export const categorySlugs = Object.keys(categoryInfo) as CategorySlug[];
+
+export function isCategorySlug(value: string): value is CategorySlug {
+  return value in categoryInfo;
+}
+
+function assertUniqueSlugs(list: PostEntry[]) {
+  const seen = new Set<string>();
+  for (const { meta } of list) {
+    if (seen.has(meta.slug)) throw new Error(`중복된 글 slug: ${meta.slug}`);
+    seen.add(meta.slug);
+  }
+}
+
+function toPost(entry: PostEntry): Post {
+  return {
+    ...entry.meta,
+    categoryLabel: categoryInfo[entry.meta.category].name,
+    readingTime: computeReadingTime(entry.content),
+    wordCount: countCharacters(entry.content),
+  };
+}
+
+const byNewest = (a: Post, b: Post) => b.publishedAt.localeCompare(a.publishedAt);
+
+assertUniqueSlugs(entries);
+
+/** 모든 발행 글, 최신순 */
+export const posts: Post[] = entries.map(toPost).sort(byNewest);
+
+export const postContent: Record<string, PostContent> = Object.fromEntries(
+  entries.map((entry) => [entry.meta.slug, entry.content]),
+);
+
+export function getPostBySlug(slug: string): Post | undefined {
+  return posts.find((post) => post.slug === slug);
+}
+
+export function getPostContent(slug: string): PostContent | undefined {
+  return postContent[slug];
+}
+
+export function getLatestPosts(limit: number, excludeSlugs: string[] = []): Post[] {
+  return posts.filter((post) => !excludeSlugs.includes(post.slug)).slice(0, limit);
+}
+
+export function getPostsByCategory(slug: CategorySlug, limit?: number): Post[] {
+  const list = posts.filter((post) => post.category === slug);
+  return limit ? list.slice(0, limit) : list;
+}
+
+/**
+ * 함께 보면 좋은 글. 글에서 직접 지정한 related → 같은 카테고리 최신순 → 다른 카테고리 최신순.
+ */
+export function getRelatedPosts(post: Post, limit = 3): Post[] {
+  const picked: Post[] = [];
+  const add = (candidate: Post | undefined) => {
+    if (!candidate || candidate.slug === post.slug) return;
+    if (picked.some((item) => item.slug === candidate.slug)) return;
+    if (picked.length < limit) picked.push(candidate);
+  };
+  for (const slug of post.related ?? []) add(getPostBySlug(slug));
+  for (const candidate of getPostsByCategory(post.category)) add(candidate);
+  for (const candidate of posts) add(candidate);
+  return picked;
+}
+
+const lastTouched = (post: Post) => post.updatedAt ?? post.publishedAt;
+
+/** 사이트 전체에서 가장 최근에 발행·수정된 날짜 */
+export function getLatestUpdateDate(): string {
+  return posts.map(lastTouched).sort().at(-1) ?? new Date().toISOString().slice(0, 10);
+}
+
+export function getCategoryLatestDate(slug: CategorySlug): string {
+  return getPostsByCategory(slug).map(lastTouched).sort().at(-1) ?? getLatestUpdateDate();
+}

@@ -3,9 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/article-card";
-import { postContent } from "@/lib/post-content";
-import { posts } from "@/lib/posts";
-import { siteConfig } from "@/lib/site";
+import { AuthorBox } from "@/components/author-box";
+import { JsonLd } from "@/components/json-ld";
+import type { ContentLink, ContentSection } from "@/lib/content-types";
+import { formatDate } from "@/lib/format";
+import { rssAlternate } from "@/lib/metadata";
+import { getPostBySlug, getPostContent, getRelatedPosts, posts } from "@/lib/posts";
+import { siteAuthor, siteConfig } from "@/lib/site";
+import { blogPostingJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/structured-data";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -15,56 +20,66 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = posts.find((item) => item.slug === slug);
+  const post = getPostBySlug(slug);
   if (!post) return {};
+  const path = `/articles/${post.slug}`;
 
   return {
     title: post.title,
     description: post.description,
-    authors: [{ name: "알고가요 편집팀", url: `${siteConfig.url}/about` }],
-    alternates: { canonical: `/articles/${post.slug}` },
+    keywords: post.tags,
+    authors: [{ name: siteAuthor.name, url: siteAuthor.url }],
+    alternates: { canonical: path, types: rssAlternate },
     openGraph: {
       type: "article",
+      locale: "ko_KR",
+      siteName: siteConfig.name,
       title: post.title,
       description: post.description,
-      url: `/articles/${post.slug}`,
+      url: path,
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt ?? post.publishedAt,
-      authors: ["알고가요 편집팀"],
+      authors: [siteAuthor.name],
       section: post.categoryLabel,
+      tags: post.tags,
+      images: [{ url: post.image, width: 1600, height: 900, alt: post.imageAlt }],
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: post.title,
       description: post.description,
+      images: [post.image],
     },
   };
 }
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("ko-KR", { year: "numeric", month: "long", day: "numeric" }).format(new Date(`${value}T00:00:00+09:00`));
+const sectionId = (section: ContentSection, index: number) => section.id ?? `section-${index + 1}`;
+
+function ContentLinkItem({ link }: { link: ContentLink }) {
+  const label = (
+    <>
+      {link.label}
+      {link.note && <small> ({link.note})</small>}
+    </>
+  );
+  return link.external ? (
+    <a href={link.href} target="_blank" rel="noopener noreferrer">{label}</a>
+  ) : (
+    <Link href={link.href}>{label}</Link>
+  );
 }
 
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
-  const post = posts.find((item) => item.slug === slug);
-  const content = postContent[slug];
+  const post = getPostBySlug(slug);
+  const content = getPostContent(slug);
   if (!post || !content) notFound();
 
-  const related = posts.filter((item) => item.category === post.category && item.slug !== post.slug).slice(0, 2);
-  const articleJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.description,
-    image: `${siteConfig.url}${post.image}`,
-    datePublished: post.publishedAt,
-    dateModified: post.updatedAt ?? post.publishedAt,
-    inLanguage: "ko-KR",
-    mainEntityOfPage: `${siteConfig.url}/articles/${post.slug}`,
-    author: { "@type": "Organization", name: "알고가요 편집팀", url: `${siteConfig.url}/about` },
-    publisher: { "@type": "Organization", name: siteConfig.name, url: siteConfig.url },
-  };
+  const path = `/articles/${post.slug}`;
+  const related = getRelatedPosts(post, 3);
+  const hasFaq = Boolean(content.faq?.length);
+  const hasChecklist = Boolean(content.checklist?.length);
+  const hasReferences = Boolean(content.references?.length);
 
   return (
     <article className="article-page">
@@ -79,13 +94,21 @@ export default async function ArticlePage({ params }: Props) {
             <h1>{post.title}</h1>
             <p className="article-description">{post.description}</p>
             <div className="article-meta">
-              <span>알고가요 편집팀</span>
-              <span>{formatDate(post.publishedAt)}</span>
+              <span>{siteAuthor.name}</span>
+              <span><time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time> 발행</span>
+              {post.updatedAt && (
+                <span><time dateTime={post.updatedAt}>{formatDate(post.updatedAt)}</time> 업데이트</span>
+              )}
               <span>{post.readingTime} 읽기</span>
             </div>
+            {post.tags && post.tags.length > 0 && (
+              <ul className="tag-list" aria-label="태그">
+                {post.tags.map((tag) => <li key={tag}>#{tag}</li>)}
+              </ul>
+            )}
           </div>
           <div className="article-cover">
-            <Image src={post.image} alt={post.imageAlt} fill sizes="(max-width: 900px) 100vw, 46vw" priority />
+            <Image src={post.image} alt={post.imageAlt} fill sizes="(max-width: 900px) 100vw, 46vw" preload />
           </div>
         </div>
       </header>
@@ -94,9 +117,14 @@ export default async function ArticlePage({ params }: Props) {
         <aside className="article-aside" aria-label="글 목차">
           <strong>이 글의 순서</strong>
           <ol>
-            {content.sections.map((section) => (
-              <li key={section.heading}><a href={`#${section.heading.split(".")[0]}`}>{section.heading}</a></li>
+            {content.sections.map((section, index) => (
+              <li key={sectionId(section, index)}>
+                <a href={`#${sectionId(section, index)}`}>{section.heading}</a>
+              </li>
             ))}
+            {hasFaq && <li><a href="#faq">자주 묻는 질문</a></li>}
+            {hasChecklist && <li><a href="#checklist">마치기 전 체크리스트</a></li>}
+            {hasReferences && <li><a href="#references">참고 자료</a></li>}
           </ol>
         </aside>
 
@@ -107,51 +135,111 @@ export default async function ArticlePage({ params }: Props) {
             {content.summary.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           </section>
 
-          {content.sections.map((section) => (
-            <section className="content-section" id={section.heading.split(".")[0]} key={section.heading}>
+          {content.sections.map((section, index) => (
+            <section className="content-section" id={sectionId(section, index)} key={sectionId(section, index)}>
               <h2>{section.heading}</h2>
               {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              {section.steps && (
+                <ol className="steps">{section.steps.map((item) => <li key={item}>{item}</li>)}</ol>
+              )}
               {section.bullets && (
                 <ul>{section.bullets.map((item) => <li key={item}>{item}</li>)}</ul>
               )}
+              {section.table && (
+                <div className="table-wrap">
+                  <table className="content-table">
+                    {section.table.caption && <caption>{section.table.caption}</caption>}
+                    <thead>
+                      <tr>{section.table.columns.map((column) => <th key={column} scope="col">{column}</th>)}</tr>
+                    </thead>
+                    <tbody>
+                      {section.table.rows.map((row, rowIndex) => (
+                        <tr key={rowIndex}>{row.map((cell, cellIndex) => <td key={cellIndex}>{cell}</td>)}</tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
               {section.note && <aside className="note"><strong>알아두세요</strong><p>{section.note}</p></aside>}
+              {section.links && section.links.length > 0 && (
+                <div className="section-links">
+                  <span>더 알아보기</span>
+                  {section.links.map((link) => <ContentLinkItem key={link.href} link={link} />)}
+                </div>
+              )}
             </section>
           ))}
 
-          <section className="checklist-box" aria-labelledby="checklist-title">
-            <p className="kicker">QUICK CHECK</p>
-            <h2 id="checklist-title">마치기 전 체크리스트</h2>
-            <ul>{content.checklist.map((item) => <li key={item}>{item}</li>)}</ul>
-          </section>
+          {hasFaq && (
+            <section className="faq-box" id="faq" aria-labelledby="faq-title">
+              <p className="kicker">FAQ</p>
+              <h2 id="faq-title">자주 묻는 질문</h2>
+              {content.faq!.map((item) => (
+                <div className="faq-item" key={item.question}>
+                  <h3>{item.question}</h3>
+                  <p>{item.answer}</p>
+                </div>
+              ))}
+            </section>
+          )}
+
+          {hasChecklist && (
+            <section className="checklist-box" id="checklist" aria-labelledby="checklist-title">
+              <p className="kicker">QUICK CHECK</p>
+              <h2 id="checklist-title">마치기 전 체크리스트</h2>
+              <ul>{content.checklist!.map((item) => <li key={item}>{item}</li>)}</ul>
+            </section>
+          )}
 
           <section className="article-closing">
             <h2>오늘은 여기까지 해보세요</h2>
             <p>{content.closing}</p>
           </section>
 
-          <div className="article-author">
-            <div className="author-mark" aria-hidden="true">알</div>
-            <div>
-              <strong>알고가요 편집팀</strong>
-              <p>공식 안내와 신뢰할 수 있는 자료를 바탕으로, 일상에서 실행하기 쉬운 순서와 기준을 정리합니다.</p>
-              <Link className="text-link" href="/about">편집 원칙 보기 <span aria-hidden="true">→</span></Link>
-            </div>
-          </div>
+          {hasReferences && (
+            <section className="references-box" id="references" aria-labelledby="references-title">
+              <h2 id="references-title">참고 자료</h2>
+              <ul>
+                {content.references!.map((ref) => (
+                  <li key={ref.href}><ContentLinkItem link={{ ...ref, external: ref.external ?? true }} /></li>
+                ))}
+              </ul>
+              <p className="references-note">글을 작성한 시점에 확인한 자료입니다. 요금과 제도는 바뀔 수 있으니 방문 시점의 최신 안내를 함께 확인하세요.</p>
+            </section>
+          )}
+
+          <AuthorBox />
+          <p className="article-disclaimer">
+            이 글은 일반적인 정보 제공을 목적으로 하며, 개인의 상황에 따라 결과가 다를 수 있습니다. 자세한 내용은 <Link href="/disclaimer">면책조항</Link>을 확인해 주세요.
+          </p>
         </div>
       </div>
 
       {related.length > 0 && (
-        <section className="related-section">
+        <section className="related-section" aria-labelledby="related-title">
           <div className="shell">
             <div className="section-heading">
-              <div><p className="kicker">KEEP READING</p><h2>같은 주제의 글</h2></div>
+              <div><p className="kicker">KEEP READING</p><h2 id="related-title">함께 보면 좋은 글</h2></div>
+              <Link className="text-link" href={`/category/${post.category}`}>
+                {post.categoryLabel} 글 더 보기 <span aria-hidden="true">→</span>
+              </Link>
             </div>
-            <div className="related-grid">{related.map((item) => <ArticleCard key={item.slug} post={item} />)}</div>
+            <div className="card-grid">{related.map((item) => <ArticleCard key={item.slug} post={item} />)}</div>
           </div>
         </section>
       )}
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c") }} />
+      <JsonLd
+        data={[
+          blogPostingJsonLd(post, content),
+          breadcrumbJsonLd([
+            { name: "홈", href: "/" },
+            { name: post.categoryLabel, href: `/category/${post.category}` },
+            { name: post.title, href: path },
+          ]),
+          ...(hasFaq ? [faqJsonLd(content.faq!, path)] : []),
+        ]}
+      />
     </article>
   );
 }
