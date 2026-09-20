@@ -34,7 +34,7 @@ const processors = [
   {
     name: "Google LLC",
     country: "미국",
-    task: "광고 게재(Google AdSense)",
+    task: "광고 게재(Google AdSense, 향후 활성화 시)",
     items: "쿠키와 광고 식별자, 접속 기록",
     policy: "https://policies.google.com/privacy",
   },
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
       />
       <p className="legal__summary">
         알고가요는 회원가입이나 개인정보 입력 양식이 없는 정보 제공 사이트입니다. 처리하는 개인정보는 이메일 문의 내용과
-        접속 과정에서 자동으로 남는 기록, 그리고 광고 게재를 위한 쿠키로 한정됩니다. 이 방침은 「개인정보
+        접속 과정에서 자동으로 남는 기록입니다. 현재 광고를 표시하지 않으며 향후 광고를 도입할 때의 쿠키 처리도 아래에 안내합니다. 이 방침은 「개인정보
         보호법」 제30조에 따라 그 내용을 알기 쉽게 안내합니다.
       </p>
 
@@ -200,7 +200,7 @@ export default function PrivacyPage() {
 
       <section aria-labelledby="p9">
         <h2 id="p9">제9조 광고 서비스(Google AdSense)와 맞춤 광고</h2>
-        <p>사이트는 Google AdSense를 통해 광고를 게재하거나 게재할 수 있습니다. 이와 관련해 다음 사항을 알려드립니다.</p>
+        <p>현재 사이트는 AdSense 심사 중이며 광고 스크립트를 실행하지 않습니다. 향후 광고를 활성화하면 아래와 같은 처리가 이루어질 수 있으며, 필요한 동의와 개인정보 안내를 적용한 후 게재합니다.</p>
         <ul>
           <li>Google을 포함한 제3자 공급업체는 쿠키를 사용하여 이용자가 이 사이트 또는 다른 웹사이트를 이전에 방문한 기록을 바탕으로 광고를 게재합니다.</li>
           <li>Google은 광고 쿠키를 사용하여 이용자의 사이트 방문 기록을 바탕으로 Google과 Google의 파트너가 광고를 게재할 수 있도록 합니다.</li>
@@ -224,6 +224,7 @@ export default function PrivacyPage() {
           </li>
         </ul>
         <p>광고의 내용과 광고를 통해 연결되는 외부 사이트의 개인정보 처리는 해당 광고주가 책임집니다.</p>
+        <p>본문 계산기 입력값과 체크리스트 체크 상태는 현재 페이지 안에서만 처리하며 서버로 전송하거나 브라우저 저장소에 보관하지 않습니다. 새로고침하면 초기화됩니다. 내려받은 기록표는 이용자의 기기에 저장됩니다.</p>
       </section>
 
       <section aria-labelledby="p10">

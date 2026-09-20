@@ -25,6 +25,16 @@ export default function HomePage() {
         </p>
       </section>
 
+      <section className="home-practice shell" aria-labelledby="practice-title">
+        <p className="kicker">읽고 바로 적용하기</p>
+        <h2 id="practice-title">내 숫자로 계산하고, 내 상황으로 준비하세요</h2>
+        <div className="practice-grid">
+          <Link href="/articles/grocery-unit-price"><strong>대용량, 얼마나 써야 이득일까</strong><span>가격·용량·버리는 양을 바꿔 실제 사용량당 비용을 비교합니다.</span></Link>
+          <Link href="/articles/fixed-expense-review"><strong>위약금까지 넣으면 정말 절약일까</strong><span>결합 할인과 전환 비용을 포함한 절감액을 계산합니다.</span></Link>
+          <Link href="/articles/photo-backup-three-step"><strong>사진을 지우기 전에 확인할 것</strong><span>동기화와 백업을 구분하고 복구 시험 기록표를 사용합니다.</span></Link>
+        </div>
+      </section>
+
       {featured && (
         <section className="home-lead shell" aria-label="최신 글">
           <div className="home-lead__main">

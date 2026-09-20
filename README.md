@@ -13,6 +13,8 @@ pnpm build        # 프로덕션 빌드 = 콘텐츠 검증
 pnpm start
 pnpm lint
 pnpm typecheck    # next typegen && tsc --noEmit
+pnpm check:calculations # 계산기 경계값·손익 검증
+pnpm worksheets   # 글별 빈 기록표 재생성 (글/체크리스트 변경 시 실행)
 ```
 
 ## 이어서 작업하기
@@ -65,4 +67,5 @@ AdSense 게시자 ID(`ca-pub-…`)는 공개 정보이므로 `src/lib/site.ts` �
 ## 검색엔진·AdSense
 
 - 사이트맵 `/sitemap.xml`, RSS `/feed.xml`, `robots.txt` 는 빌드 시 자동 생성됩니다.
-- AdSense 로더 스크립트와 `google-adsense-account` 메타 태그는 루트 레이아웃에 있습니다. 승인 후 광고 단위를 넣을 때는 글 페이지의 섹션 사이(`src/components/article-body.tsx`)와 데스크톱 사이드바(`src/app/articles/[slug]/page.tsx`)가 자리입니다.
+- 재검토 중에는 광고 로더를 실행하지 않습니다. 소유권 확인용 `google-adsense-account` 메타 태그와 `public/ads.txt`는 유지합니다. 승인 후 광고를 도입할 때 콘텐츠가 있는 화면만 대상으로 배치·개인정보 고지를 함께 검토하세요.
+- 2026-09-20 콘텐츠 보완 및 검증 기록: [`docs/adsense-review-2026-09-20.md`](docs/adsense-review-2026-09-20.md).

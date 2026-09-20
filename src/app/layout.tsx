@@ -64,12 +64,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         {/* 페이지별 alternates.canonical 이 metadata의 alternates 를 통째로 덮어쓰므로 RSS 링크는 직접 둔다. */}
         <link rel="alternate" type="application/rss+xml" title={`${siteConfig.name} RSS`} href={absoluteUrl("/feed.xml")} />
-        {/* AdSense 사이트 확인·광고 로더. React 19가 head로 호이스팅하므로 SSR HTML에 그대로 남는다. */}
-        <script
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${siteConfig.adsense.client}`}
-          crossOrigin="anonymous"
-        />
+        {/* 심사 중 소유권은 google-adsense-account 메타와 ads.txt로 확인한다.
+            광고 로더는 승인 후 콘텐츠가 있는 페이지에 한해 별도로 설정한다. */}
       </head>
       <body>
         <a className="skip-link" href="#main-content">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/article-body";
+import { ArticleChecklist, SwitchingCalculator, UnitPriceCalculator } from "@/components/article-tools";
 import { ArticleCard } from "@/components/article-card";
 import { ArticleToc, ArticleTocMobile } from "@/components/article-toc";
 import { AuthorBox } from "@/components/author-box";
@@ -126,16 +127,11 @@ export default async function ArticlePage({ params }: PageProps<"/articles/[slug
 
           <ArticleBody body={post.body} />
 
+          {post.slug === "grocery-unit-price" && <UnitPriceCalculator />}
+          {post.slug === "fixed-expense-review" && <SwitchingCalculator />}
+
           {post.checklist.length > 0 && (
-            <section className="checklist" aria-labelledby="checklist-title">
-              <p className="kicker">마치기 전에</p>
-              <h2 id="checklist-title">체크리스트</h2>
-              <ul>
-                {post.checklist.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </section>
+            <ArticleChecklist items={post.checklist} slug={post.slug} />
           )}
 
           {post.closing && (

@@ -972,6 +972,38 @@ time {
   font-size: 0.72rem;
   font-weight: 900;
 }
+
+.article-tool { margin-top: 48px; padding: 28px; background: #f0f6f4; border: 1px solid #b7ccc1; border-radius: 16px; }
+.article-tool h2 { font-size: 1.55rem; line-height: 1.4; margin-bottom: 16px; }
+.article-tool p { margin-bottom: 18px; }
+.tool-grid, .tool-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 20px 0; }
+.article-tool fieldset { min-width: 0; padding: 18px; border: 1px solid #b7ccc1; border-radius: 10px; }
+.article-tool legend { padding-inline: 6px; font-weight: 700; }
+.article-tool label { display: grid; gap: 6px; margin-bottom: 12px; font-size: .9rem; font-weight: 600; }
+.article-tool input, .article-tool select { width: 100%; min-width: 0; min-height: 44px; border: 1px solid #657a70; border-radius: 6px; padding: 8px 10px; color: #14213d; background: white; font: inherit; }
+.article-tool input:focus-visible, .article-tool select:focus-visible { outline: 3px solid #cf3f2c; outline-offset: 2px; }
+.tool-unit { max-width: 240px; }
+.tool-result { margin-top: 20px; padding: 18px; border-left: 4px solid #276447; background: white; line-height: 1.8; }
+.article-tool .tool-note { margin: 15px 0 0; font-size: .83rem; color: #45506a; }
+.interactive-checklist li { padding-left: 0; }
+.interactive-checklist li::before { display: none; }
+.interactive-checklist label { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; min-height: 40px; }
+.interactive-checklist input { flex: 0 0 auto; width: 22px; height: 22px; margin-top: 3px; accent-color: #b9d8c2; }
+.interactive-checklist input:focus-visible { outline: 3px solid #ffc4b9; outline-offset: 4px; }
+.interactive-checklist > p { margin-bottom: 20px; color: #e6eaf2; font-size: .9rem; }
+.interactive-checklist > p[role="status"] { margin: 18px 0 10px; }
+.interactive-checklist .text-link { color: #ffc4b9; }
+.home-practice { margin-bottom: 48px; padding-block: 26px; border-block: 1px solid var(--line); }
+.home-practice h2 { font-size: clamp(1.3rem, 3vw, 1.85rem); margin-bottom: 22px; }
+.practice-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.practice-grid a { display: flex; flex-direction: column; gap: 10px; padding: 20px; background: #f0f6f4; border-radius: 12px; }
+.practice-grid a:hover { background: #e3eee7; }
+.practice-grid strong { font-size: 1rem; }
+.practice-grid span { color: #45506a; font-size: .9rem; }
+@media (max-width: 600px) {
+  .article-tool { padding: 20px 16px; }
+  .tool-grid, .tool-fields, .practice-grid { grid-template-columns: 1fr; }
+}
 .closing {
   margin-top: 48px;
   padding-top: 32px;

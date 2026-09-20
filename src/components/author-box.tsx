@@ -13,7 +13,7 @@ export function AuthorBox() {
           <strong>{author.name}</strong>
           <span>{author.role}</span>
         </p>
-        <p>직접 확인한 순서와 기준만 적고, 조건에 따라 달라지는 부분은 그대로 밝힙니다.</p>
+        <p>공식 자료의 확인 경로와 생활 속 적용 예시를 함께 정리합니다. 계산 예시와 체험 기록을 구분하고, 달라질 수 있는 조건을 밝힙니다.</p>
         <Link className="text-link" href={author.url}>
           운영자와 편집 원칙 보기 <span aria-hidden="true">→</span>
         </Link>
