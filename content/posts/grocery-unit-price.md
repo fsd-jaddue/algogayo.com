@@ -2,7 +2,7 @@
 title: "대용량이 늘 싼 것은 아니다: 장볼 때 단위 가격 계산하는 법"
 description: "묶음 할인과 대용량 상품 앞에서 실제로 이득인지 빠르게 판단하는 계산 기준을 예시와 함께 정리했습니다."
 category: living
-publishedAt: 2026-07-21
+publishedAt: 2026-09-05
 updatedAt: 2026-09-20
 imageAlt: "계산기와 식재료, 계획표가 놓인 식탁을 그린 생활비 안내 일러스트"
 summary:

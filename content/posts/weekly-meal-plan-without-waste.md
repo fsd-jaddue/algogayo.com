@@ -2,7 +2,7 @@
 title: "장보기 전 20분, 식비와 음식물 쓰레기를 함께 줄이는 주간 식단법"
 description: "냉장고 확인부터 공통 재료 고르기, 장보기 목록 작성까지 매주 반복할 수 있는 현실적인 순서를 정리했습니다."
 category: living
-publishedAt: 2026-08-28
+publishedAt: 2026-09-05
 updatedAt: 2026-09-20
 imageAlt: "계산기와 식재료, 계획표가 놓인 식탁을 그린 생활비 안내 일러스트"
 summary:

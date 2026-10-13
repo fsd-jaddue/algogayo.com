@@ -2,6 +2,8 @@
 
 ## Context
 
+> **2026-10-13 메모(이 문서는 9/6 계획 원문이며 아래 내용 중 일부는 이후 바뀜):** 9/20 재검토 요청 → 10/10 "가치가 별로 없는 콘텐츠"로 재거절. 심사 중에는 광고 로더(adsbygoogle)를 넣지 않고 메타와 ads.txt만 유지함(§1·§2·§5의 "스크립트 유지"는 해당 없음). Phase 6의 "사이트 삭제 → 재추가"는 하지 않음. 글자 수 목표는 승인 기준이 아니며, 우선순위는 1차 경험·고유 이미지·꾸준한 갱신. 현재 상태는 `docs/handoff.md` §0.
+
 GPT/Codex로 만든 Next.js 16 사이트로 AdSense 승인을 **신청한 상태**(아직 미승인). 사용자는 현재 신청을 취소하고 재신청할 예정이며, 1순위는 **승인 통과**다. 코드·구조·디자인·정책 문서는 전부 바꿔도 되고, 이미지는 내가 쓴 프롬프트로 사용자가 GPT에서 생성한다.
 
 현재 코드 평가: 구조는 무난하지만 승인 심사에서 약한 지점이 분명하다. 글 8편(한국어 문장은 자연스럽고 과장이 없어 **텍스트는 살린다**)에 이미지 3장이 돌려쓰이고, 본문이 TS 객체에 하드코딩되어 글을 늘리기 어렵다. 개인정보처리방침은 Google 필수 고지와 한국 개인정보보호법 §30 항목이 빠져 있다. OG 이미지·RSS·네이버 등록이 없고 폰트도 실제로 로드되지 않는다.
@@ -189,6 +191,7 @@ closing: >-                 # 선택
 
 ### Phase 6 — 재신청 (§8 체크리스트 통과 후)
 AdSense에서 사이트 삭제 → 재추가 → 코드 확인 → 검토 요청.
+> 2026-10-13: 삭제·재추가는 하지 않음. 기존 사이트 항목에서 "문제를 수정했음을 확인" 후 재검토 요청을 한 번만.
 
 ### Phase 7 — 승인 후
 `ad-slot.tsx` + 배치 3곳(본문 2번째 섹션 뒤(섹션 ≥ 3일 때), 마무리 아래, 데스크톱 sticky 사이드바) → 광고 단위 3개 생성 → `ads.ts`에 id → 배포. Auto ads는 앵커만, URL 제외에 `/privacy`, `/terms`, `/contact`, `/about`. GDPR(EEA/UK) 메시지 게시.
@@ -215,7 +218,7 @@ pnpm install && pnpm lint && pnpm typecheck && pnpm build && pnpm start
 ```
 - 빌드 출력에서 모든 글·카테고리가 정적이고 `draft` 글이 목록에 없는지.
 - `curl -sI localhost:3000/{,articles,category/living,about,privacy,terms,contact,feed.xml,sitemap.xml,robots.txt,ads.txt,없는slug}` → 200/404.
-- `curl -s localhost:3000/ | grep -o 'adsbygoogle.js[^"]*\|google-adsense-account[^>]*'` → SSR HTML에 스크립트·메타 존재.
+- `curl -s localhost:3000/ | grep -o 'adsbygoogle.js[^"]*\|google-adsense-account[^>]*'` → SSR HTML에 스크립트·메타 존재. (2026-09-20 이후: 메타만 있고 로더는 없어야 정상)
 - 글 페이지 JSON-LD를 https://validator.schema.org 에서 검증(Article·BreadcrumbList). `og:image`가 대표 사진.
 - Lighthouse(모바일): Performance ≥ 90, SEO 100, Accessibility ≥ 95, CLS < 0.1.
 - 모바일: 햄버거 열기/닫기, Escape, 라우트 이동 시 닫힘, 포커스 복귀.
@@ -295,7 +298,7 @@ curl -s -A "Mediapartners-Google" -o /dev/null -w '%{http_code}\n' https://algog
 - [ ] 20편 모두 공개, 각 2,000자 이상, 고유 이미지
 - [ ] Search Console "페이지" 보고서에서 글 대부분 색인됨(최소 며칠 대기)
 - [ ] 헤더·푸터에서 소개·문의·개인정보·약관 도달, 빈 카테고리·"준비 중" 없음
-- [ ] `view-source`에 adsbygoogle.js 스크립트와 `google-adsense-account` 메타, `/ads.txt` 200
+- [ ] `view-source`에 `google-adsense-account` 메타, `/ads.txt` 200 (2026-09-20 이후 심사 중에는 adsbygoogle.js 로더를 넣지 않음)
 - [ ] Mediapartners-Google UA로 200, robots에 차단 없음
 - [ ] 모바일에서 메뉴·글·이미지 정상, 콘솔 오류 없음
 - [ ] 문의 메일 수신 테스트 완료

@@ -18,7 +18,7 @@ export type RenderedMarkdown = {
   charCount: number;
 };
 
-const parser = unified().use(remarkParse).use(remarkGfm).use(remarkRehype);
+const parser = unified().use(remarkParse).use(remarkGfm, { singleTilde: false }).use(remarkRehype);
 const stringifier = unified().use(rehypeStringify);
 
 function isH2(node: RootContent): node is Element {
@@ -38,7 +38,7 @@ function decorate(root: Root) {
       const wrapper: Element = {
         type: "element",
         tagName: "div",
-        properties: { className: ["table-wrap"] },
+        properties: { className: ["table-wrap"], tabIndex: 0 },
         children: [node],
       };
       parent.children[index] = wrapper;
