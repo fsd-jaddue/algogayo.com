@@ -2,7 +2,7 @@
 title: "비밀번호 관리 앱을 처음 쓸 때 꼭 정할 네 가지 원칙"
 description: "도구를 바꾸는 것보다 중요한 마스터 비밀번호, 복구 수단, 2단계 인증과 기기 관리의 기본을 다룹니다."
 category: digital
-publishedAt: 2026-07-14
+publishedAt: 2026-09-05
 updatedAt: 2026-10-13
 imageAlt: "스마트폰과 파일 폴더가 정돈된 책상을 그린 디지털 안내 일러스트"
 summary:

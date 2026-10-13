@@ -149,7 +149,7 @@ export default function PrivacyPage() {
           제공자는 자체 개인정보 보호정책과 계약 조건에 따라 정보를 보호합니다. 각 제공자의 이용 목적과 보유 기간,
           연락 방법은 아래 표의 개인정보 보호정책 링크에서 확인할 수 있습니다.
         </p>
-        <div className="table-wrap">
+        <div className="table-wrap" tabIndex={0}>
           <table>
             <thead>
               <tr>

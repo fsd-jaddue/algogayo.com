@@ -2,7 +2,7 @@
 title: "집중력을 되찾는 스마트폰 알림 정리: 30분 설정 가이드"
 description: "모든 알림을 끄는 극단적인 방법 대신, 놓치면 곤란한 알림만 남기는 기준과 순서를 알려드립니다."
 category: digital
-publishedAt: 2026-08-24
+publishedAt: 2026-09-05
 updatedAt: 2026-10-13
 imageAlt: "스마트폰과 파일 폴더가 정돈된 책상을 그린 디지털 안내 일러스트"
 summary:

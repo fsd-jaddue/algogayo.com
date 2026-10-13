@@ -2,7 +2,7 @@
 title: "비 예보가 있는 여행, 일정 전체를 바꾸지 않는 플랜 B 만들기"
 description: "실내 후보를 무작정 늘리지 않고 이동 동선과 예약 조건을 기준으로 대체 일정을 준비하는 법입니다."
 category: travel
-publishedAt: 2026-07-29
+publishedAt: 2026-09-05
 updatedAt: 2026-10-13
 imageAlt: "여행 가방과 준비물을 그린 여행 안내 일러스트"
 summary:

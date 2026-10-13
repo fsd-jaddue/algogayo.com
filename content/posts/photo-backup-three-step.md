@@ -2,7 +2,7 @@
 title: "휴대폰 사진이 쌓일 때: 삭제보다 먼저 할 3단계 백업"
 description: "원본을 잃지 않으면서 중복 사진을 줄이고, 나중에도 찾기 쉬운 폴더 구조를 만드는 방법을 설명합니다."
 category: digital
-publishedAt: 2026-08-05
+publishedAt: 2026-09-05
 updatedAt: 2026-10-13
 imageAlt: "스마트폰과 파일 폴더가 정돈된 책상을 그린 디지털 안내 일러스트"
 summary:

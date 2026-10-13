@@ -2,7 +2,7 @@
 title: "매달 빠져나가는 고정비, 1시간 안에 점검하는 순서"
 description: "통신비·구독·보험·주거비를 한꺼번에 줄이려다 지치지 않도록, 효과가 큰 항목부터 확인하는 방법입니다."
 category: living
-publishedAt: 2026-08-12
+publishedAt: 2026-09-05
 updatedAt: 2026-09-20
 imageAlt: "계산기와 식재료, 계획표가 놓인 식탁을 그린 생활비 안내 일러스트"
 summary:

@@ -2,7 +2,7 @@
 title: "주말 1박 2일 짐 싸기: 빠뜨리지 않고 가볍게 챙기는 체크리스트"
 description: "가방 크기부터 옷 조합, 세면도구와 충전기까지 짐을 줄이면서도 불편하지 않은 준비법입니다."
 category: travel
-publishedAt: 2026-08-18
+publishedAt: 2026-09-05
 updatedAt: 2026-10-13
 imageAlt: "여행 가방과 준비물을 그린 여행 안내 일러스트"
 summary:
