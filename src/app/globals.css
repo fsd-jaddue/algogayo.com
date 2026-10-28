@@ -985,6 +985,11 @@ time {
 .tool-unit { max-width: 240px; }
 .tool-result { margin-top: 20px; padding: 18px; border-left: 4px solid #276447; background: white; line-height: 1.8; }
 .article-tool .tool-note { margin: 15px 0 0; font-size: .83rem; color: #45506a; }
+.tool-source { margin-top: 12px; font-size: .9rem; color: #45506a; }
+.tool-source a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.worksheet-list { display: grid; gap: 12px; margin-top: 18px; }
+.worksheet-list li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.worksheet-list li > a:first-child { font-weight: 600; }
 .interactive-checklist li { padding-left: 0; }
 .interactive-checklist li::before { display: none; }
 .interactive-checklist label { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; min-height: 40px; }
@@ -1000,6 +1005,7 @@ time {
 .practice-grid a:hover { background: #e3eee7; }
 .practice-grid strong { font-size: 1rem; }
 .practice-grid span { color: #45506a; font-size: .9rem; }
+.home-practice__more { display: inline-block; margin-top: 18px; }
 @media (max-width: 600px) {
   .article-tool { padding: 20px 16px; }
   .tool-grid, .tool-fields, .practice-grid { grid-template-columns: 1fr; }

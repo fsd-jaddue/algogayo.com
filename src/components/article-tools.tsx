@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { switchingCost, unitCost } from "@/lib/calculations";
+import { annualPlanCost, switchingCost, unitCost } from "@/lib/calculations";
 
 const money = (n: number) => new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 }).format(n);
 
@@ -59,6 +59,31 @@ export function SwitchingCalculator() {
     <form onSubmit={calculate}><div className="tool-fields">{labels.map((label, i) => <label key={label}>{label}<input type="number" required inputMode="numeric" min={i === 4 ? 1 : 0} max={i === 4 ? 120 : 1000000000} step="1" value={values[i]} onChange={(e) => { setValues(values.map((v, j) => j === i ? e.target.value : v)); setResult(null); }} /></label>)}</div><button className="button button--primary" type="submit">전체 비용 계산</button></form>
     <div className="tool-result" role="status">{result ?? "본문의 월 7,000원 절감 예시를 넣어두었습니다."}</div>
     <p className="tool-note">입력값은 서버로 보내거나 저장하지 않습니다. 계약 변경이나 해지를 실행하는 기능은 없습니다.</p>
+  </section>;
+}
+
+export function AnnualPlanCalculator() {
+  const [values, setValues] = useState(["10900", "109000", "8"]);
+  const [result, setResult] = useState<string | null>(null);
+  function calculate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const [monthly, annual, months] = values.map(Number);
+    const cost = annualPlanCost(monthly, annual, months);
+    if (!cost) { setResult("월 요금, 연간 요금, 사용 개월 수(1~12)를 확인해주세요."); return; }
+    const verdict = Math.abs(cost.difference) < 0.5 ? "두 방식의 비용이 같습니다." : cost.difference > 0 ? `연간 결제가 ${money(cost.difference)}원 저렴합니다.` : `월 결제가 ${money(-cost.difference)}원 저렴합니다.`;
+    const usage = months === 12 ? "12개월 내내 쓰면" : `${months}개월만 쓰고 해지하면`;
+    const breakEven = cost.breakEvenMonths > 12
+      ? "연간 요금이 월 요금 12개월보다 비싸서 1년 안에는 연간 결제가 유리해지지 않습니다."
+      : `연간 요금은 월 요금 12개월보다 ${money(cost.discountPercent)}% 저렴하고, ${money(cost.breakEvenMonths)}개월 이상 쓸 때부터 연간 결제가 손해가 아닙니다.`;
+    setResult(`${usage} 월 결제 ${money(cost.monthlyTotal)}원, 연간 결제 ${money(cost.annualTotal)}원으로 ${verdict} ${breakEven}`);
+  }
+  const labels = ["월 결제 요금 (원)", "연간 결제 요금 (원)", "실제로 쓸 개월 수 (1~12)"];
+  return <section className="article-tool" aria-labelledby="annual-calculator-title">
+    <p className="kicker">내 구독에 적용하기</p><h2 id="annual-calculator-title">월 결제·연간 결제 손익분기 계산기</h2>
+    <p>연간 결제는 중도 해지해도 환불이 없다고 가정합니다. 잔여 기간 환불이 있는 서비스라면 그 금액만큼 연간 결제가 유리해집니다.</p>
+    <form onSubmit={calculate}><div className="tool-fields">{labels.map((label, i) => <label key={label}>{label}<input type="number" required inputMode="numeric" min={i === 2 ? 1 : i === 0 ? 1 : 0} max={i === 2 ? 12 : 100000000} step="1" value={values[i]} onChange={(e) => { setValues(values.map((v, j) => j === i ? e.target.value : v)); setResult(null); }} /></label>)}</div><button className="button button--primary" type="submit">두 방식 비교</button></form>
+    <div className="tool-result" role="status">{result ?? "본문의 월 10,900원·연 109,000원, 8개월 사용 예시를 넣어두었습니다."}</div>
+    <p className="tool-note">입력값은 서버로 보내거나 저장하지 않습니다. 첫 달 무료, 해외 결제 수수료, 기간 중 요금 변경은 포함하지 않습니다.</p>
   </section>;
 }
 
