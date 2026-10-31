@@ -27,12 +27,15 @@ const prompts = {
 
 const target = "public/worksheets";
 fs.mkdirSync(target, { recursive: true });
+let count = 0;
 for (const file of fs.readdirSync("content/posts").filter((f) => f.endsWith(".md"))) {
   const slug = file.slice(0, -3);
   const { data } = matter(fs.readFileSync(path.join("content/posts", file), "utf8"));
-  if (data.draft) continue;
+  // 체크리스트가 없는 글은 기록표 링크도 보이지 않으므로 만들지 않는다.
+  if (data.draft || !data.checklist?.length) continue;
   if (!prompts[slug]) throw new Error(`Missing worksheet prompts: ${slug}`);
   const lines = ["알고가요 · 내 상황에 적용하는 기록표", data.title, `https://algogayo.com/articles/${slug}`, "", "작성 날짜:", "이 파일은 빈 기록표입니다. 작성한 내용은 알고가요에 전달되지 않습니다.", "비밀번호·주민등록번호·카드번호 등 민감한 정보는 적지 마세요.", "", ...prompts[slug].flatMap((line) => [line, "__________________________________________________", ""]), "마치기 전 확인", ...(data.checklist ?? []).map((v) => `[ ] ${v}`), "", "다음에 바꿀 한 가지:", "__________________________________________________", ""];
   fs.writeFileSync(path.join(target, `${slug}.txt`), lines.join("\n"));
+  count += 1;
 }
-console.log("Generated 20 article worksheets.");
+console.log(`Generated ${count} article worksheets.`);

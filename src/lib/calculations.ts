@@ -13,3 +13,16 @@ export function switchingCost(current: number, next: number, extras: number, upf
   if (!Number.isFinite(total)) return null;
   return { monthly, total, breakEven: monthly > 0 ? Math.ceil(upfront / monthly) : null };
 }
+
+export function annualPlanCost(monthlyPrice: number, annualPrice: number, monthsUsed: number) {
+  if (![monthlyPrice, annualPrice, monthsUsed].every(Number.isFinite) || monthlyPrice <= 0 || annualPrice < 0 || !Number.isInteger(monthsUsed) || monthsUsed < 1 || monthsUsed > 12) return null;
+  const monthlyTotal = monthlyPrice * monthsUsed;
+  const breakEvenMonths = annualPrice / monthlyPrice;
+  return {
+    monthlyTotal,
+    annualTotal: annualPrice,
+    difference: monthlyTotal - annualPrice,
+    breakEvenMonths,
+    discountPercent: (1 - annualPrice / (monthlyPrice * 12)) * 100,
+  };
+}

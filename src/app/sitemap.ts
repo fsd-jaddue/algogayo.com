@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/"), lastModified: latest, changeFrequency: "weekly", priority: 1 },
     { url: absoluteUrl("/articles"), lastModified: latest, changeFrequency: "weekly", priority: 0.9 },
+    { url: absoluteUrl("/tools"), lastModified: latest, changeFrequency: "monthly", priority: 0.7 },
     { url: absoluteUrl("/about"), lastModified: privacyPolicy.effectiveDate, changeFrequency: "monthly", priority: 0.6 },
     { url: absoluteUrl("/contact"), lastModified: privacyPolicy.effectiveDate, changeFrequency: "yearly", priority: 0.4 },
     { url: absoluteUrl("/privacy"), lastModified: privacyPolicy.effectiveDate, changeFrequency: "yearly", priority: 0.3 },
