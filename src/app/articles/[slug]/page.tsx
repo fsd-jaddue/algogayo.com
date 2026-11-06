@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/article-body";
-import { AnnualPlanCalculator, ArticleChecklist, SwitchingCalculator, UnitPriceCalculator } from "@/components/article-tools";
+import { AnnualPlanCalculator, ArticleChecklist, OverseasCardCalculator, SwitchingCalculator, UnitPriceCalculator } from "@/components/article-tools";
 import { ArticleCard } from "@/components/article-card";
 import { ArticleToc, ArticleTocMobile } from "@/components/article-toc";
 import { AuthorBox } from "@/components/author-box";
@@ -130,6 +130,7 @@ export default async function ArticlePage({ params }: PageProps<"/articles/[slug
           {post.slug === "grocery-unit-price" && <UnitPriceCalculator />}
           {post.slug === "fixed-expense-review" && <SwitchingCalculator />}
           {post.slug === "subscription-annual-vs-monthly" && <AnnualPlanCalculator />}
+          {post.slug === "overseas-card-fees-dcc" && <OverseasCardCalculator />}
 
           {post.checklist.length > 0 && (
             <ArticleChecklist items={post.checklist} slug={post.slug} />

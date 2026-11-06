@@ -26,3 +26,13 @@ export function annualPlanCost(monthlyPrice: number, annualPrice: number, months
     discountPercent: (1 - annualPrice / (monthlyPrice * 12)) * 100,
   };
 }
+
+export function overseasCardCost(amount: number, rate: number, brandPercent: number, servicePercent: number, dccPercent: number) {
+  const percents = [brandPercent, servicePercent, dccPercent];
+  if (![amount, rate, ...percents].every(Number.isFinite) || amount <= 0 || rate <= 0 || percents.some((n) => n < 0 || n > 20)) return null;
+  const base = amount * rate;
+  const feeRate = (brandPercent + servicePercent) / 100;
+  const local = base * (1 + feeRate);
+  const dcc = base * (1 + dccPercent / 100) * (1 + feeRate);
+  return { base, local, dcc, difference: dcc - local };
+}
