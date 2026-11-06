@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { unitCost, switchingCost } from "../src/lib/calculations.ts";
+import { annualPlanCost, overseasCardCost, unitCost, switchingCost } from "../src/lib/calculations.ts";
 
 assert.equal(unitCost({ price: 10900, quantity: 1000, usedPercent: 80 }), 13.625);
 assert.equal(unitCost({ price: 0, quantity: 100, usedPercent: 100 }), 0);
@@ -18,4 +18,19 @@ assert.equal(switchingCost(100, 90, 0, 0, 12).breakEven, 0);
 assert.equal(switchingCost(100, 90, 0, 0, 0), null);
 assert.equal(switchingCost(100, 90, 0, 0, 1.5), null);
 assert.equal(switchingCost(100, NaN, 0, 0, 12), null);
-console.log("Calculation checks passed: waste, zero/invalid input, switching costs and recovery periods.");
+assert.deepEqual(annualPlanCost(10900, 109000, 12), { monthlyTotal: 130800, annualTotal: 109000, difference: 21800, breakEvenMonths: 10, discountPercent: 1 / 6 * 100 });
+assert.equal(annualPlanCost(10900, 109000, 10).difference, 0);
+assert.equal(annualPlanCost(10900, 109000, 6).difference, -43600);
+assert.equal(annualPlanCost(10000, 96000, 12).breakEvenMonths, 9.6);
+assert.ok(Math.abs(annualPlanCost(10000, 96000, 12).discountPercent - 20) < 1e-9);
+assert.equal(annualPlanCost(10000, 130000, 12).difference, -10000);
+assert.equal(annualPlanCost(10000, 0, 1).difference, 10000);
+for (const args of [[0, 100, 12], [-1, 100, 12], [100, -1, 12], [100, 100, 0], [100, 100, 13], [100, 100, 2.5], [NaN, 100, 12]]) assert.equal(annualPlanCost(...args), null);
+const card = overseasCardCost(200, 1400, 1, 0.25, 5);
+assert.equal(card.base, 280000);
+assert.ok(Math.abs(card.local - 283500) < 1e-6);
+assert.ok(Math.abs(card.dcc - 297675) < 1e-6);
+assert.ok(Math.abs(card.difference - 14175) < 1e-6);
+assert.equal(overseasCardCost(100, 1000, 0, 0, 0).difference, 0);
+for (const args of [[0, 1400, 1, 0.25, 5], [100, 0, 1, 0.25, 5], [100, 1400, -1, 0.25, 5], [100, 1400, 1, 21, 5], [100, 1400, 1, 0.25, NaN]]) assert.equal(overseasCardCost(...args), null);
+console.log("Calculation checks passed: waste, zero/invalid input, switching costs, recovery periods, annual plans and overseas card fees.");

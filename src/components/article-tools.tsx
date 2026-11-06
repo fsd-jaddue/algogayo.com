@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { switchingCost, unitCost } from "@/lib/calculations";
+import { annualPlanCost, overseasCardCost, switchingCost, unitCost } from "@/lib/calculations";
 
 const money = (n: number) => new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 }).format(n);
 
@@ -59,6 +59,51 @@ export function SwitchingCalculator() {
     <form onSubmit={calculate}><div className="tool-fields">{labels.map((label, i) => <label key={label}>{label}<input type="number" required inputMode="numeric" min={i === 4 ? 1 : 0} max={i === 4 ? 120 : 1000000000} step="1" value={values[i]} onChange={(e) => { setValues(values.map((v, j) => j === i ? e.target.value : v)); setResult(null); }} /></label>)}</div><button className="button button--primary" type="submit">전체 비용 계산</button></form>
     <div className="tool-result" role="status">{result ?? "본문의 월 7,000원 절감 예시를 넣어두었습니다."}</div>
     <p className="tool-note">입력값은 서버로 보내거나 저장하지 않습니다. 계약 변경이나 해지를 실행하는 기능은 없습니다.</p>
+  </section>;
+}
+
+export function AnnualPlanCalculator() {
+  const [values, setValues] = useState(["10900", "109000", "8"]);
+  const [result, setResult] = useState<string | null>(null);
+  function calculate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const [monthly, annual, months] = values.map(Number);
+    const cost = annualPlanCost(monthly, annual, months);
+    if (!cost) { setResult("월 요금, 연간 요금, 사용 개월 수(1~12)를 확인해주세요."); return; }
+    const verdict = Math.abs(cost.difference) < 0.5 ? "두 방식의 비용이 같습니다." : cost.difference > 0 ? `연간 결제가 ${money(cost.difference)}원 저렴합니다.` : `월 결제가 ${money(-cost.difference)}원 저렴합니다.`;
+    const usage = months === 12 ? "12개월 내내 쓰면" : `${months}개월만 쓰고 해지하면`;
+    const breakEven = cost.breakEvenMonths > 12
+      ? "연간 요금이 월 요금 12개월보다 비싸서 1년 안에는 연간 결제가 유리해지지 않습니다."
+      : `연간 요금은 월 요금 12개월보다 ${money(cost.discountPercent)}% 저렴하고, ${money(cost.breakEvenMonths)}개월 이상 쓸 때부터 연간 결제가 손해가 아닙니다.`;
+    setResult(`${usage} 월 결제 ${money(cost.monthlyTotal)}원, 연간 결제 ${money(cost.annualTotal)}원으로 ${verdict} ${breakEven}`);
+  }
+  const labels = ["월 결제 요금 (원)", "연간 결제 요금 (원)", "실제로 쓸 개월 수 (1~12)"];
+  return <section className="article-tool" aria-labelledby="annual-calculator-title">
+    <p className="kicker">내 구독에 적용하기</p><h2 id="annual-calculator-title">월 결제·연간 결제 손익분기 계산기</h2>
+    <p>연간 결제는 중도 해지해도 환불이 없다고 가정합니다. 잔여 기간 환불이 있는 서비스라면 그 금액만큼 연간 결제가 유리해집니다.</p>
+    <form onSubmit={calculate}><div className="tool-fields">{labels.map((label, i) => <label key={label}>{label}<input type="number" required inputMode="numeric" min={i === 2 ? 1 : i === 0 ? 1 : 0} max={i === 2 ? 12 : 100000000} step="1" value={values[i]} onChange={(e) => { setValues(values.map((v, j) => j === i ? e.target.value : v)); setResult(null); }} /></label>)}</div><button className="button button--primary" type="submit">두 방식 비교</button></form>
+    <div className="tool-result" role="status">{result ?? "본문의 월 10,900원·연 109,000원, 8개월 사용 예시를 넣어두었습니다."}</div>
+    <p className="tool-note">입력값은 서버로 보내거나 저장하지 않습니다. 첫 달 무료, 해외 결제 수수료, 기간 중 요금 변경은 포함하지 않습니다.</p>
+  </section>;
+}
+
+export function OverseasCardCalculator() {
+  const [values, setValues] = useState(["200", "1400", "1", "0.25", "5"]);
+  const [result, setResult] = useState<string | null>(null);
+  function calculate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const [amount, rate, brand, service, dcc] = values.map(Number);
+    const cost = overseasCardCost(amount, rate, brand, service, dcc);
+    if (!cost) { setResult("결제 금액·환율은 0보다 크게, 수수료율은 0~20% 사이로 입력해주세요."); return; }
+    setResult(`현지 통화로 결제하면 약 ${money(Math.round(cost.local))}원, 원화로 결제하면 약 ${money(Math.round(cost.dcc))}원이 청구됩니다. 원화결제를 고르면 약 ${money(Math.round(cost.difference))}원을 더 냅니다. 수수료가 없다고 가정한 금액은 ${money(Math.round(cost.base))}원입니다.`);
+  }
+  const labels = ["결제 금액 (현지 통화)", "환율 (현지 통화 1단위당 원)", "국제브랜드 수수료 (%)", "카드사 해외서비스 수수료 (%)", "원화결제 추가 수수료 (%)"];
+  return <section className="article-tool" aria-labelledby="overseas-card-calculator-title">
+    <p className="kicker">결제 전에 따져보기</p><h2 id="overseas-card-calculator-title">현지 통화 결제와 원화결제 비교 계산기</h2>
+    <p>수수료율은 내 카드의 상품설명서나 카드사 해외 이용 안내에서 확인해 넣으세요. 원화결제 추가 수수료는 가맹점마다 달라서 기본값은 금융감독원이 안내한 3~8% 범위의 중간값인 5%로 두었습니다.</p>
+    <form onSubmit={calculate}><div className="tool-fields">{labels.map((label, i) => <label key={label}>{label}<input type="number" required inputMode="decimal" min={i < 2 ? 0.01 : 0} max={i < 2 ? 100000000 : 20} step="any" value={values[i]} onChange={(e) => { setValues(values.map((v, j) => j === i ? e.target.value : v)); setResult(null); }} /></label>)}</div><button className="button button--primary" type="submit">청구액 비교</button></form>
+    <div className="tool-result" role="status">{result ?? "본문의 200달러, 환율 1,400원 예시를 넣어두었습니다."}</div>
+    <p className="tool-note">입력값은 서버로 보내거나 저장하지 않습니다. 원화결제 때 한 번 더 붙는 환전 차이와 결제일·청구일 사이의 환율 변동은 포함하지 않으므로 실제 차이는 더 클 수 있습니다.</p>
   </section>;
 }
 

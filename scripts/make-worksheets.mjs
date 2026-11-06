@@ -22,17 +22,22 @@ const prompts = {
   "smishing-check-before-tap": ["링크만 열었는지 / 정보를 입력했는지 / 앱·원격제어 허용 여부:", "안전한 다른 기기 확보 / 공식 기관 연락 경로:", "피해 의심 시 112·금융기관 연락 시각 / 상담 안내:", "증빙 보관 위치 (실제 비밀번호·인증번호는 적지 마세요):"],
   "unused-accounts-cleanup": ["서비스 / 사용 목적 / 정기 결제 / 남길 자료:", "백업 확인 / 서비스 안에서 탈퇴 완료 확인:", "탈퇴 유예 기간 / 완료 후 남은 연결 해제:", "계정 소유자 동의 확인 (비밀번호는 적지 마세요):"],
   "travel-phone-battery-data": ["배터리 상태 / 충전기·케이블 / 필요한 앱:", "오프라인 지도 범위 / 지원되는 이동 수단 / 시험 결과:", "탑승 항공사 배터리 규정 확인일 / 제품 Wh 표시:", "종이 메모 보관 / 돌아온 뒤 원복할 설정:"],
+  "lost-phone-first-hour": ["기기 찾기 켜짐 확인 / 확인한 날짜:", "다른 기기에서 로그인할 계정 / 로그인 시험 결과 (비밀번호는 적지 마세요):", "복구 코드 보관 위치 (코드 자체는 적지 마세요):", "통신사 / 다른 휴대폰에서 걸 번호:", "휴대폰에 등록된 결제수단·교통카드 / 분실 시 연락할 발급처:"],
+  "overseas-card-fees-dcc": ["가져갈 카드 / 국제브랜드 / 브랜드 수수료율 / 해외서비스 수수료율:", "해외원화결제 차단 신청한 카드 / 신청 날짜:", "미리 결제할 해외 숙소·항공권 / 결제 통화 확인:", "명세서 확인일 / 원화결제로 청구된 건 / 금액:"],
   "selling-used-items-prep": ["물건 상태 / 모델 / 하자 / 포함품:", "참고 게시 가격 범위 (최종 거래 금액과 다를 수 있음):", "개인정보 제거 / 백업 / 제조사 초기화 안내 확인:", "플랫폼 보호 범위 / 거래 조건 / 실제 입금 확인 / 인도 기록:"],
 };
 
 const target = "public/worksheets";
 fs.mkdirSync(target, { recursive: true });
+let count = 0;
 for (const file of fs.readdirSync("content/posts").filter((f) => f.endsWith(".md"))) {
   const slug = file.slice(0, -3);
   const { data } = matter(fs.readFileSync(path.join("content/posts", file), "utf8"));
-  if (data.draft) continue;
+  // 체크리스트가 없는 글은 기록표 링크도 보이지 않으므로 만들지 않는다.
+  if (data.draft || !data.checklist?.length) continue;
   if (!prompts[slug]) throw new Error(`Missing worksheet prompts: ${slug}`);
   const lines = ["알고가요 · 내 상황에 적용하는 기록표", data.title, `https://algogayo.com/articles/${slug}`, "", "작성 날짜:", "이 파일은 빈 기록표입니다. 작성한 내용은 알고가요에 전달되지 않습니다.", "비밀번호·주민등록번호·카드번호 등 민감한 정보는 적지 마세요.", "", ...prompts[slug].flatMap((line) => [line, "__________________________________________________", ""]), "마치기 전 확인", ...(data.checklist ?? []).map((v) => `[ ] ${v}`), "", "다음에 바꿀 한 가지:", "__________________________________________________", ""];
   fs.writeFileSync(path.join(target, `${slug}.txt`), lines.join("\n"));
+  count += 1;
 }
-console.log("Generated 20 article worksheets.");
+console.log(`Generated ${count} article worksheets.`);
