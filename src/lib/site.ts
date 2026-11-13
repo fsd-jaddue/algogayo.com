@@ -26,6 +26,7 @@ export const navigation = [
   { href: "/category/living", label: "생활비" },
   { href: "/category/digital", label: "디지털" },
   { href: "/category/travel", label: "여행" },
+  { href: "/tools", label: "계산기" },
   { href: "/about", label: "소개" },
 ] as const;
 
@@ -35,6 +36,7 @@ export const footerNavigation = {
     { href: "/category/living", label: "생활비" },
     { href: "/category/digital", label: "디지털" },
     { href: "/category/travel", label: "여행" },
+    { href: "/tools", label: "계산기와 기록표" },
   ],
   site: [
     { href: "/about", label: "사이트 소개" },
