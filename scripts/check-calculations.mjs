@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { annualPlanCost, overseasCardCost, unitCost, switchingCost } from "../src/lib/calculations.ts";
+import { annualPlanCost, overseasCardCost, passportValidity, unitCost, switchingCost } from "../src/lib/calculations.ts";
 
 assert.equal(unitCost({ price: 10900, quantity: 1000, usedPercent: 80 }), 13.625);
 assert.equal(unitCost({ price: 0, quantity: 100, usedPercent: 100 }), 0);
@@ -33,4 +33,10 @@ assert.ok(Math.abs(card.dcc - 297675) < 1e-6);
 assert.ok(Math.abs(card.difference - 14175) < 1e-6);
 assert.equal(overseasCardCost(100, 1000, 0, 0, 0).difference, 0);
 for (const args of [[0, 1400, 1, 0.25, 5], [100, 0, 1, 0.25, 5], [100, 1400, -1, 0.25, 5], [100, 1400, 1, 21, 5], [100, 1400, 1, 0.25, NaN]]) assert.equal(overseasCardCost(...args), null);
-console.log("Calculation checks passed: waste, zero/invalid input, switching costs, recovery periods, annual plans and overseas card fees.");
+assert.deepEqual(passportValidity("2027-08-01", "2027-01-10", "2027-01-15"), { sufficient: true, requiredUntil: "2027-07-15", daysShort: 0, applyBy: "2026-12-20" });
+assert.deepEqual(passportValidity("2027-06-30", "2027-01-10", "2027-01-15"), { sufficient: false, requiredUntil: "2027-07-15", daysShort: 15, applyBy: "2026-12-20" });
+assert.equal(passportValidity("2027-07-15", "2027-01-10", "2027-01-15").sufficient, true);
+assert.equal(passportValidity("2028-01-01", "2027-08-25", "2027-08-31").requiredUntil, "2028-02-29");
+assert.equal(passportValidity("2028-01-01", "2026-08-25", "2026-08-31").requiredUntil, "2027-02-28");
+for (const args of [["2027-02-30", "2027-01-10", "2027-01-15"], ["2027-08-01", "2027-01-15", "2027-01-10"], ["", "2027-01-10", "2027-01-15"], ["2027/08/01", "2027-01-10", "2027-01-15"]]) assert.equal(passportValidity(...args), null);
+console.log("Calculation checks passed: waste, zero/invalid input, switching costs, recovery periods, annual plans, overseas card fees and passport validity.");

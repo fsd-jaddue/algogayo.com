@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { annualPlanCost, overseasCardCost, switchingCost, unitCost } from "@/lib/calculations";
+import { annualPlanCost, overseasCardCost, passportValidity, switchingCost, unitCost } from "@/lib/calculations";
 
 const money = (n: number) => new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 }).format(n);
 
@@ -104,6 +104,30 @@ export function OverseasCardCalculator() {
     <form onSubmit={calculate}><div className="tool-fields">{labels.map((label, i) => <label key={label}>{label}<input type="number" required inputMode="decimal" min={i < 2 ? 0.01 : 0} max={i < 2 ? 100000000 : 20} step="any" value={values[i]} onChange={(e) => { setValues(values.map((v, j) => j === i ? e.target.value : v)); setResult(null); }} /></label>)}</div><button className="button button--primary" type="submit">청구액 비교</button></form>
     <div className="tool-result" role="status">{result ?? "본문의 200달러, 환율 1,400원 예시를 넣어두었습니다."}</div>
     <p className="tool-note">입력값은 서버로 보내거나 저장하지 않습니다. 원화결제 때 한 번 더 붙는 환전 차이와 결제일·청구일 사이의 환율 변동은 포함하지 않으므로 실제 차이는 더 클 수 있습니다.</p>
+  </section>;
+}
+
+const koreanDate = (value: string) => { const [y, m, d] = value.split("-").map(Number); return `${y}년 ${m}월 ${d}일`; };
+
+export function PassportValidityChecker() {
+  const [values, setValues] = useState(["2027-06-30", "2027-01-10", "2027-01-15"]);
+  const [result, setResult] = useState<string | null>(null);
+  function calculate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const [expiry, departure, returnDate] = values;
+    const check = passportValidity(expiry, departure, returnDate);
+    if (!check) { setResult("날짜를 모두 입력하고, 귀국일이 출발일보다 빠르지 않은지 확인해주세요."); return; }
+    setResult(check.sufficient
+      ? `귀국일 기준으로 6개월 뒤인 ${koreanDate(check.requiredUntil)}까지 여권이 유효합니다. 다만 방문국마다 요건이 다르니 해당 국가의 입국 요건도 확인하세요.`
+      : `귀국일 기준 6개월(${koreanDate(check.requiredUntil)})보다 ${check.daysShort}일 먼저 만료됩니다. 6개월 이상을 요구하는 나라라면 재발급이 필요하며, ${check.applyBy < new Date().toLocaleDateString("sv-SE") ? `권장 신청일(${koreanDate(check.applyBy)})이 이미 지났으니 바로 신청하고 수령 가능일을 수령 기관에 확인하세요.` : `처리 기간과 여유를 고려해 ${koreanDate(check.applyBy)}까지는 신청하는 것을 권합니다.`}`);
+  }
+  const labels = ["여권 만료일", "출국일", "귀국일"];
+  return <section className="article-tool" aria-labelledby="passport-checker-title">
+    <p className="kicker">출발 전에 확인하기</p><h2 id="passport-checker-title">여권 유효기간 확인기</h2>
+    <p>귀국일 기준으로 여권 유효기간이 6개월 이상 남는지 계산합니다. 남지 않는다면 출국 3주 전을 신청 권장일로 보여 줍니다. 국내 처리 기간(근무일 기준 통상 8일)에 성수기 지연과 수령 일정을 더한 여유입니다.</p>
+    <form onSubmit={calculate}><div className="tool-fields">{labels.map((label, i) => <label key={label}>{label}<input type="date" required value={values[i]} onChange={(e) => { setValues(values.map((v, j) => j === i ? e.target.value : v)); setResult(null); }} /></label>)}</div><button className="button button--primary" type="submit">유효기간 확인</button></form>
+    <div className="tool-result" role="status">{result ?? "본문 예시(만료일 2027년 6월 30일, 1월 10일 출국·15일 귀국)를 넣어두었습니다."}</div>
+    <p className="tool-note">입력값은 서버로 보내거나 저장하지 않습니다. 국가별 입국 요건은 계산하지 않으므로 방문국 정보는 외교부 해외안전여행 등에서 따로 확인하세요.</p>
   </section>;
 }
 

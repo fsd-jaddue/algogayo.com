@@ -36,3 +36,34 @@ export function overseasCardCost(amount: number, rate: number, brandPercent: num
   const dcc = base * (1 + dccPercent / 100) * (1 + feeRate);
   return { base, local, dcc, difference: dcc - local };
 }
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function parseDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const [y, m, d] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d ? date : null;
+}
+
+/** 월말에서 더할 때는 그 달의 마지막 날로 맞춘다(8월 31일 + 6개월 = 2월 말일). */
+function addMonths(date: Date, months: number) {
+  const target = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1));
+  const lastDay = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+  target.setUTCDate(Math.min(date.getUTCDate(), lastDay));
+  return target;
+}
+
+const toDateString = (date: Date) => date.toISOString().slice(0, 10);
+
+export function passportValidity(expiry: string, departure: string, returnDate: string, requiredMonths = 6, leadDays = 21) {
+  const [exp, dep, ret] = [expiry, departure, returnDate].map(parseDate);
+  if (!exp || !dep || !ret || ret < dep) return null;
+  const requiredUntil = addMonths(ret, requiredMonths);
+  return {
+    sufficient: exp >= requiredUntil,
+    requiredUntil: toDateString(requiredUntil),
+    daysShort: exp >= requiredUntil ? 0 : Math.round((requiredUntil.getTime() - exp.getTime()) / DAY_MS),
+    applyBy: toDateString(new Date(dep.getTime() - leadDays * DAY_MS)),
+  };
+}
