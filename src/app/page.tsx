@@ -31,8 +31,11 @@ export default function HomePage() {
         <div className="practice-grid">
           <Link href="/articles/grocery-unit-price"><strong>대용량, 얼마나 써야 이득일까</strong><span>가격·용량·버리는 양을 바꿔 실제 사용량당 비용을 비교합니다.</span></Link>
           <Link href="/articles/fixed-expense-review"><strong>위약금까지 넣으면 정말 절약일까</strong><span>결합 할인과 전환 비용을 포함한 절감액을 계산합니다.</span></Link>
-          <Link href="/articles/photo-backup-three-step"><strong>사진을 지우기 전에 확인할 것</strong><span>동기화와 백업을 구분하고 복구 시험 기록표를 사용합니다.</span></Link>
+          <Link href="/articles/subscription-annual-vs-monthly"><strong>연간 결제, 몇 달 써야 이득일까</strong><span>월 요금과 연간 요금으로 손익분기 개월 수를 계산합니다.</span></Link>
         </div>
+        <Link className="text-link home-practice__more" href="/tools">
+          계산기와 기록표 모두 보기 <span aria-hidden="true">→</span>
+        </Link>
       </section>
 
       {featured && (
