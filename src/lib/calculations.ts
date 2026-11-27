@@ -67,3 +67,15 @@ export function passportValidity(expiry: string, departure: string, returnDate: 
     applyBy: toDateString(new Date(dep.getTime() - leadDays * DAY_MS)),
   };
 }
+
+/** 24시간마다 일 최대 요금이 다시 적용된다고 가정하고, 남는 시간은 시간 단위로 올려 계산한다. */
+export function parkingVsTransit(hours: number, hourlyRate: number, dailyMax: number, roadCost: number, travelers: number, fareOneWay: number) {
+  const values = [hours, hourlyRate, dailyMax, roadCost, travelers, fareOneWay];
+  if (!values.every(Number.isFinite) || hours <= 0 || values.slice(1).some((n) => n < 0) || !Number.isInteger(travelers) || travelers < 1) return null;
+  const fullDays = Math.floor(hours / 24);
+  const rest = Math.ceil(hours - fullDays * 24);
+  const parking = fullDays * dailyMax + Math.min(rest * hourlyRate, dailyMax);
+  const drive = parking + roadCost;
+  const transit = travelers * fareOneWay * 2;
+  return { parking, drive, transit, difference: transit - drive };
+}

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { annualPlanCost, overseasCardCost, passportValidity, unitCost, switchingCost } from "../src/lib/calculations.ts";
+import { annualPlanCost, overseasCardCost, parkingVsTransit, passportValidity, unitCost, switchingCost } from "../src/lib/calculations.ts";
 
 assert.equal(unitCost({ price: 10900, quantity: 1000, usedPercent: 80 }), 13.625);
 assert.equal(unitCost({ price: 0, quantity: 100, usedPercent: 100 }), 0);
@@ -39,4 +39,10 @@ assert.equal(passportValidity("2027-07-15", "2027-01-10", "2027-01-15").sufficie
 assert.equal(passportValidity("2028-01-01", "2027-08-25", "2027-08-31").requiredUntil, "2028-02-29");
 assert.equal(passportValidity("2028-01-01", "2026-08-25", "2026-08-31").requiredUntil, "2027-02-28");
 for (const args of [["2027-02-30", "2027-01-10", "2027-01-15"], ["2027-08-01", "2027-01-15", "2027-01-10"], ["", "2027-01-10", "2027-01-15"], ["2027/08/01", "2027-01-10", "2027-01-15"]]) assert.equal(passportValidity(...args), null);
-console.log("Calculation checks passed: waste, zero/invalid input, switching costs, recovery periods, annual plans, overseas card fees and passport validity.");
+assert.deepEqual(parkingVsTransit(100, 1000, 9000, 30000, 2, 17000), { parking: 40000, drive: 70000, transit: 68000, difference: -2000 });
+assert.equal(parkingVsTransit(96, 1000, 9000, 0, 1, 0).parking, 36000);
+assert.equal(parkingVsTransit(3.2, 1000, 9000, 0, 1, 0).parking, 4000);
+assert.equal(parkingVsTransit(30, 2400, 24000, 0, 1, 0).parking, 38400);
+assert.equal(parkingVsTransit(100, 1000, 9000, 30000, 4, 17000).difference, 66000);
+for (const args of [[0, 1000, 9000, 0, 1, 0], [10, -1, 9000, 0, 1, 0], [10, 1000, 9000, 0, 0, 0], [10, 1000, 9000, 0, 1.5, 0], [NaN, 1000, 9000, 0, 1, 0]]) assert.equal(parkingVsTransit(...args), null);
+console.log("Calculation checks passed: waste, zero/invalid input, switching costs, recovery periods, annual plans, overseas card fees, passport validity and airport parking.");

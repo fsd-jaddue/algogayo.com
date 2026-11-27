@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { annualPlanCost, overseasCardCost, passportValidity, switchingCost, unitCost } from "@/lib/calculations";
+import { annualPlanCost, overseasCardCost, parkingVsTransit, passportValidity, switchingCost, unitCost } from "@/lib/calculations";
 
 const money = (n: number) => new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 }).format(n);
 
@@ -128,6 +128,27 @@ export function PassportValidityChecker() {
     <form onSubmit={calculate}><div className="tool-fields">{labels.map((label, i) => <label key={label}>{label}<input type="date" required value={values[i]} onChange={(e) => { setValues(values.map((v, j) => j === i ? e.target.value : v)); setResult(null); }} /></label>)}</div><button className="button button--primary" type="submit">유효기간 확인</button></form>
     <div className="tool-result" role="status">{result ?? "본문 예시(만료일 2027년 6월 30일, 1월 10일 출국·15일 귀국)를 넣어두었습니다."}</div>
     <p className="tool-note">입력값은 서버로 보내거나 저장하지 않습니다. 국가별 입국 요건은 계산하지 않으므로 방문국 정보는 외교부 해외안전여행 등에서 따로 확인하세요.</p>
+  </section>;
+}
+
+export function AirportParkingCalculator() {
+  const [values, setValues] = useState(["100", "1000", "9000", "30000", "2", "17000"]);
+  const [result, setResult] = useState<string | null>(null);
+  function calculate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const [hours, hourly, dailyMax, road, travelers, fare] = values.map(Number);
+    const cost = parkingVsTransit(hours, hourly, dailyMax, road, travelers, fare);
+    if (!cost) { setResult("주차 시간은 0보다 크게, 인원은 1명 이상의 정수로, 금액은 0원 이상으로 입력해주세요."); return; }
+    const verdict = cost.difference === 0 ? "두 방법의 비용이 같습니다." : cost.difference > 0 ? `자가용이 ${money(cost.difference)}원 저렴합니다.` : `대중교통이 ${money(-cost.difference)}원 저렴합니다.`;
+    setResult(`주차 요금 약 ${money(cost.parking)}원에 왕복 유류비·통행료를 더하면 자가용은 약 ${money(cost.drive)}원, ${travelers}명이 대중교통으로 왕복하면 약 ${money(cost.transit)}원입니다. ${verdict}`);
+  }
+  const labels = ["주차할 시간 (시간)", "시간당 주차 요금 (원)", "하루 최대 주차 요금 (원)", "왕복 유류비·통행료 (원)", "함께 가는 인원 (명)", "1인 편도 대중교통 요금 (원)"];
+  return <section className="article-tool" aria-labelledby="airport-parking-calculator-title">
+    <p className="kicker">출발 전에 따져보기</p><h2 id="airport-parking-calculator-title">공항 주차와 대중교통 비교 계산기</h2>
+    <p>기본값은 인천공항 장기주차장 소형차 요금(시간당 1,000원, 하루 최대 9,000원)입니다. 단기주차장은 시간당 2,400원, 하루 최대 24,000원으로 바꿔 넣으세요. 24시간마다 하루 최대 요금이 다시 적용된다고 가정합니다.</p>
+    <form onSubmit={calculate}><div className="tool-fields">{labels.map((label, i) => <label key={label}>{label}<input type="number" required inputMode="decimal" min={i === 0 ? 0.1 : i === 4 ? 1 : 0} max={i === 0 ? 2000 : i === 4 ? 20 : 10000000} step={i === 0 ? "any" : "1"} value={values[i]} onChange={(e) => { setValues(values.map((v, j) => j === i ? e.target.value : v)); setResult(null); }} /></label>)}</div><button className="button button--primary" type="submit">비용 비교</button></form>
+    <div className="tool-result" role="status">{result ?? "본문 예시(4박 5일 약 100시간, 2명)를 넣어두었습니다."}</div>
+    <p className="tool-note">입력값은 서버로 보내거나 저장하지 않습니다. 경차·친환경차 감면, 예약 주차, 주차 대행 요금과 집에서 정류장까지 가는 비용은 포함하지 않습니다.</p>
   </section>;
 }
 

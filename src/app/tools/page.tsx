@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AnnualPlanCalculator, OverseasCardCalculator, PassportValidityChecker, SwitchingCalculator, UnitPriceCalculator } from "@/components/article-tools";
+import { AirportParkingCalculator, AnnualPlanCalculator, OverseasCardCalculator, PassportValidityChecker, SwitchingCalculator, UnitPriceCalculator } from "@/components/article-tools";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { JsonLd } from "@/components/json-ld";
 import { PageHead } from "@/components/page-head";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 import { breadcrumbJsonLd } from "@/lib/seo";
 
-const description = "단위 가격, 고정비 전환, 구독 연간 결제 손익분기, 해외 카드 결제 수수료, 여권 유효기간을 내 숫자로 계산하는 도구와 글별 빈 기록표를 모았습니다.";
+const description = "단위 가격, 고정비 전환, 구독 연간 결제 손익분기, 해외 카드 결제 수수료, 여권 유효기간, 공항 주차비를 내 숫자로 계산하는 도구와 글별 빈 기록표를 모았습니다.";
 
 export const metadata: Metadata = {
   title: "계산기와 기록표",
@@ -23,6 +23,7 @@ const calculators = [
   { slug: "subscription-annual-vs-monthly", Tool: AnnualPlanCalculator },
   { slug: "overseas-card-fees-dcc", Tool: OverseasCardCalculator },
   { slug: "passport-validity-renewal", Tool: PassportValidityChecker },
+  { slug: "airport-parking-vs-transit", Tool: AirportParkingCalculator },
 ];
 
 export default function ToolsPage() {
